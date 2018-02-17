@@ -221,3 +221,23 @@
 (define (h n) (A 2 n))                  ; (A 2 n) = (A 1 (A 2 (- n 1))) = (A 0 (A 1 (- (A 2 (- n 1)) 1)))
                                         ; = (* 2 (A 1 (- (A 2 (- n 1)) 1)))
                                         ; = 2 ** 2 ** 2 ** 2 ... [ with (n-1) powers ** ] 
+
+
+;; Exercise 1.11: Fibonacci-like sequence
+(define (fib-like n)
+  (cond ((< n 3) n)
+        (else (+ (fib-like (- n 1))
+                 (* 2 (fib-like (- n 2)))
+                 (* 3 (fib-like (- n 3)))))))
+
+(define (fib-like-i n)
+  (define (fib-like-iter a b c count)
+    (if (> count n)
+        a
+        (fib-like-iter (+ a (* 2 b) (* 3 c))
+                       a
+                       b
+                       (+ count 1))))
+  (if (< n 3)
+      n
+      (fib-like-iter 2 1 0 3)))
