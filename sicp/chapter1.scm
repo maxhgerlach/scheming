@@ -241,3 +241,20 @@
   (if (< n 3)
       n
       (fib-like-iter 2 1 0 3)))
+
+
+;; Exercise 1.12: Pascal triangle
+(define (pascal r c)
+  (cond ((or (< r 1) (< c 1) (> c r)) 0)
+        ((or (= c 1) (= c r)) 1)
+        (else (+ (pascal (- r 1) (- c 1))
+                 (pascal (- r 1) c)))))
+(pascal 1 0)                            ;0
+(pascal 1 2)                            ;0
+(pascal 1 1)                            ;1
+(pascal 2 1)                            ;1
+(pascal 2 2)                            ;1
+(pascal 3 2)                            ;2
+(pascal 3 3)                            ;1
+(pascal 5 3)                            ;6
+
