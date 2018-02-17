@@ -39,21 +39,32 @@
       a
       b))
 (max 10 10)
+(define (min a b)
+  (if (< a b)
+      a
+      b))
+(min 5 3)
 (define (square a)
   (* a a))
 (define (sum-of-squares a b)
   (+ (square a) (square b)))
 (define (sum-of-squares-largest-two a b c)
-  (if (and (<= a b) (<= a c))
-      (sum-of-squares b c)
-      (if (and (<= b a) (<= b c))
-          (sum-of-squares a c)
-          (if (and (<= c a) (<= c b))
-              (sum-of-squares a b)))))
+  (+ (square (max a b)) (square (max (min a b) c))))
 (sum-of-squares-largest-two 1 2 3)      ;13
 (sum-of-squares-largest-two 3 2 1)      ;13
 (sum-of-squares-largest-two 2 3 1)      ;13
 
-              
-      
-  
+;; exercise 1.4
+(define (a-plus-abs-b a b)
+  ((if (> b 0) + -) a b))
+(a-plus-abs-b 3 -4)
+(a-plus-abs-b 3 4)
+
+;; exercise 1.5
+(define (p) (p))
+;(p) ;; infinite loop
+(define (test x y)
+  (if (= x 0) 0 y))
+
+;(test 0 (p)) ;; infinite loop -> Guile seems to use applicative order
+              ;; -> (p) is evaluated before the if is encountered
