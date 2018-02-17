@@ -2,7 +2,7 @@
   Let's try `guile`:
   https://www.gnu.org/software/guile/docs/guile-tut/tutorial.html
 
-  sudo apt install guile gnuplot
+  sudo apt install guile-2.0 guile-2.0-dev gnuplot
 
   Emacs packages: paredit, geiser
 

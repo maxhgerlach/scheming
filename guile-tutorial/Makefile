@@ -1,11 +1,11 @@
 CC=gcc
-override CFLAGS += -Wall
+CFLAGS = `guile-config compile` -Wall
+LIBS = `guile-config link` -lm
 
 #_DEPS = hellomake.h
 #DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 DEPS =
-LIBS = -lm
 OBJ = tortoise.o
 
 %.o: %.c $(DEPS)
