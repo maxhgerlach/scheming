@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS = `guile-config compile` -Wall
+CFLAGS = `guile-config compile` -Wall -g
 LIBS = `guile-config link` -lm
 
 #_DEPS = hellomake.h

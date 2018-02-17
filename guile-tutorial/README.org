@@ -6,4 +6,11 @@
 
   Emacs packages: paredit, geiser
 
+  Something seems to be wrong with my gnuplot setup on Ubuntu 17.10 --
+  I cannot get the plotting from the guile REPL to work
+  reliably. Anyway, invocation with `./tortoise -l koch-curve.scm`
+  brings up a nice plot.
+
+  
+
   
