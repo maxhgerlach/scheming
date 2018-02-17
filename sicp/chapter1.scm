@@ -258,3 +258,23 @@
 (pascal 3 3)                            ;1
 (pascal 5 3)                            ;6
 
+
+
+;; Exercise 1.15
+(define (cube x) (* x x x))
+(define (p x) (- (* 3 x) (* 4 (cube x))))
+(define (sine angle)
+  (if (not (> (abs angle) 0.1))
+      angle
+      (p (sine (/ angle 3.0)))))
+
+;; 12.5 / 3 / 3 / 3 / 3 / 3 = 0.051440329218 < 0.1
+;; -> p is called 5 times to compute (sine 12.5) -- confirmation:
+;; scheme@(guile-user) [1]> ,trace (sine 12.5)
+
+;; memory, operations ~ invocations of p
+;; angle * (1/3)**invocations <= 0.1
+;; ->
+;; invocations ~ ceil(ln(10 * angle) / ln(3))
+;;
+;; O(log(angle))
