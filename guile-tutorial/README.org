@@ -1,5 +1,5 @@
 * Guile tutorial
-  Let's try `guile`:
+  Let's try embedding guile in a C program:
   https://www.gnu.org/software/guile/docs/guile-tut/tutorial.html
 
   sudo apt install guile-2.0 guile-2.0-dev gnuplot
