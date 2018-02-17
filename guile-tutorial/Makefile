@@ -1,4 +1,5 @@
 CC=gcc
+override CFLAGS += -Wall
 
 #_DEPS = hellomake.h
 #DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
