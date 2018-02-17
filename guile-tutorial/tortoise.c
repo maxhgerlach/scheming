@@ -3,9 +3,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <math.h>
 
 static const int WIDTH = 10;
 static const int HEIGHT = 10;
+static double x, y;
+static double direction;
+static int pendown;
+
+
+
+static FILE* global_output;
+
+
 
 static FILE*
 start_gnuplot ()
@@ -38,12 +48,63 @@ start_gnuplot ()
     return output;
 }
 
-static FILE* global_output;
+static void
+draw_line (FILE* output, double x1, double y1, double x2, double y2)
+{
+    fprintf (output, "plot [0:1] %f + %f * t, %f + %f * t notitle\n",
+             x1, x2 - x1, y1, y2 - y1);
+    fflush (output);
+}
+
+static void
+tortoise_reset ()
+{
+    x = y = 0.0;
+    direction = 0.0;
+    pendown = 1;
+
+    fprintf (global_output, "clear\n");
+    fflush (global_output);
+}
+
+static void
+tortoise_pendown ()
+{
+    pendown = 1;
+}
+
+static void
+tortoise_penup ()
+{
+    pendown = 0;
+}
+
+static void
+tortoise_turn (double degrees)
+{
+    direction += M_PI / 180.0 * degrees;
+}
+
+static void
+tortoise_move (double length)
+{
+    double newX, newY;
+
+    newX = x + length * cos (direction);
+    newY = y + length * sin (direction);
+
+    if (pendown)
+        draw_line (global_output, x, y, newX, newY);
+
+    x = newX;
+    y = newY;
+}
 
 int
 main (int argc, char* argv[])
 {
     global_output = start_gnuplot ();
+    tortoise_reset();
 
     return EXIT_SUCCESS;
 }

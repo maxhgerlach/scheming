@@ -5,7 +5,7 @@ override CFLAGS += -Wall
 #DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 DEPS =
-LIBS = 
+LIBS = -lm
 OBJ = tortoise.o
 
 %.o: %.c $(DEPS)
