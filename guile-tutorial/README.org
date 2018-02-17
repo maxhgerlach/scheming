@@ -1,0 +1,9 @@
+* Guile tutorial
+  Let's try `guile`:
+  https://www.gnu.org/software/guile/docs/guile-tut/tutorial.html
+
+  sudo apt install guile gnuplot
+
+  Emacs packages: paredit, geiser
+
+  
