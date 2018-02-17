@@ -11,8 +11,6 @@ static double x, y;
 static double direction;
 static int pendown;
 
-
-
 static FILE* global_output;
 
 
@@ -105,6 +103,16 @@ main (int argc, char* argv[])
 {
     global_output = start_gnuplot ();
     tortoise_reset();
+
+    {
+        int i;
+        tortoise_pendown (); /* This is unnecessary, but makes it clearer.  */
+        for (i = 1; i <= 4; ++i)
+        {
+            tortoise_move (3.0);
+            tortoise_turn (90.0);
+        }
+    }
 
     return EXIT_SUCCESS;
 }
