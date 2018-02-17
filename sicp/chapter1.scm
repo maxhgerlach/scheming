@@ -68,3 +68,71 @@
 
 ;(test 0 (p)) ;; infinite loop -> Guile seems to use applicative order
               ;; -> (p) is evaluated before the if is encountered
+
+
+;; Newton square root approx
+(define (sqrt-iter guess x)
+  (if (good-enough? guess x)
+      guess
+      (sqrt-iter (improve guess x) x)))
+(define (improve guess x)
+  (average guess (/ x guess)))
+(define (average x y)
+  (/ (+ x y) 2))
+(define (good-enough? guess x)
+  (< (abs (- (square guess) x)) 0.001))
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+(sqrt 9)
+(sqrt (+ 100 37))
+(square (sqrt 1000))
+
+
+;; exercise 1.6
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+        (else else-clause)))
+(define (new-sqrt-iter guess x)
+  (new-if (good-enough? guess x)
+          guess
+          (new-sqrt-iter (improve guess x) x)))
+(define (new-sqrt x)
+  (new-sqrt-iter 1.0 x))
+;(new-sqrt 9)
+;;stack overflow: when using new-if instead of i, due to applicative
+;;order new-sqrt-iter is called again and again although unnecessary
+;;(all arguments to new-if are evaluated before the combination is
+;;evaluated)
+
+
+;; exercise 1.8
+(define (cbrt-iter guess x)
+  (if (cbrt-good-enough? guess x)
+      guess
+      (cbrt-iter (improve-cbrt guess x) x)))
+(define (square a)
+  (* a a))
+(define (improve-cbrt guess x)
+  (/ (+ (/ x (square guess)) (* 2 guess)) 
+     3))
+(define (cbrt-good-enough? guess x)
+  (< (abs (- (* guess guess guess) x)) 0.001))
+(define (cbrt x)
+  (cbrt-iter 1.0 x))
+(cbrt 27)
+
+
+;; sqrt with internal definitions
+(define (average x y)
+  (/ (+ x y) 2))
+(define (sqrt x)
+  (define (sqrt-iter guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess))))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (sqrt-iter 1.0))
+(sqrt 15)
