@@ -1,4 +1,5 @@
 * Notes on Structure and Interpretation of Computer Programs (SICP)
   - nice (unofficial) PDF edition: [[https://github.com/sarabander/sicp-pdf]]
-  - guide to approach the book using the Guile dialect of Scheme:
+  - guide to approaching the book using the Guile dialect of Scheme:
     [[https://github.com/zv/SICP-guile]]
+  - Emacs-REPL: [[http://www.nongnu.org/geiser/geiser_3.html#The-REPL]], M-x run-geiser
