@@ -154,3 +154,70 @@
                    max-count)))
   (fact-iter 1 1 n))
 (factorial 6)
+
+
+;;Exercise 1.9
+;; I: a linear recursive procedure (growing chain of inc's)
+(define (+ a b)
+  (if (= a 0) b (inc (+ (dec a) b))))
+
+(+ 4 5)
+(if (= 4 0) 5 (inc (+ (dec 4) 5)))
+(if #f 5 (inc (+ 3 5)))
+(if #f 5 (inc (if (= 3 0) 5 (inc (+ (dec 3) 5)))))
+(if #f 5 (inc (if #f 5 (inc (+ 2 5)))))
+(if #f 5 (inc (if #f 5 (inc (if (= 2 0) 5 (inc (+ (dec 2) 5)))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (+ 1 5)))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if (= 1 0) 5 (inc (+ (dec 1) 5))) ))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (+ 0 5)))))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #t 5 (inc (+ (dec 0) 5)))))))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc 5))))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 6)))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc 6))))))
+(if #f 5 (inc (if #f 5 (inc (if #f 5 7)))))
+(if #f 5 (inc (if #f 5 (inc 7))))
+(if #f 5 (inc (if #f 5 8)))
+(if #f 5 (inc 8))
+(if #f 5 9)
+9
+;; actually the (if #f ..) would be simplified earlier
+
+;; II: iterative -- discarding the if's the number of variables to hold state does not grow indefinitely
+(define (+ a b)
+  (if (= a 0) b (+ (dec a) (inc b))))
+
+(+ 4 5)
+(if (= 4 0) 5 (+ (dec 4) (inc 5)))
+(if #f 5 (+ (dec 4) (inc 5)))
+(if #f 5 (+ 3 6))
+(if #f 5 (if (= 3 0) 6 (+ (dec 3) (inc 6))))
+(if #f 5 (if #f 6 (+ 2 7)))
+(if #f 5 (if #f 6 (if (= 2 0) 7 (+ (dec 2) (inc 7)))))
+(if #f 5 (if #f 6 (if #f 7 (+ 1 8))))
+(if #f 5 (if #f 6 (if (= a 1) 8 (+ (dec 1) (inc 8)))))
+(if #f 5 (if #f 6 (if #f 8 (+ 0 9))))
+(if #f 5 (if #f 6 (if #f 8 (if (= 0 0) 9 (+ (dec 0) (inc 9))))))
+(if #f 5 (if #f 6 (if #f 8 (if #t 9 (+ -1 10)))))
+(if #f 5 (if #f 6 (if #f 8 9)))
+9
+
+
+;; Exercise 1.10: Ackermann's function
+(define (A x y)
+  (cond ((= y 0) 0)
+        ((= x 0) (* 2 y))
+        ((= y 1) 2)
+        (else (A (- x 1) (A x (- y 1))))))
+(A 1 10)                                ;1024
+(A 2 4)                                 ;65536
+(A 3 3)                                 ;65536
+
+
+(define (f n) (A 0 n))                  ; = 2*n
+
+(define (g n) (A 1 n))                  ; (A 1 n) = (A 0 (A 1 (- n 1))) = (* 2 (A 1 (- n 1)))
+                                        ; = 2**n for n > 0, 0 for n = 0
+
+(define (h n) (A 2 n))                  ; (A 2 n) = (A 1 (A 2 (- n 1))) = (A 0 (A 1 (- (A 2 (- n 1)) 1)))
+                                        ; = (* 2 (A 1 (- (A 2 (- n 1)) 1)))
+                                        ; = 2 ** 2 ** 2 ** 2 ... [ with (n-1) powers ** ] 
