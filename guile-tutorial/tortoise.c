@@ -20,8 +20,8 @@ start_gnuplot ()
     if (!pid)
     {
         dup2 (pipes[0], STDIN_FILENO);
-        execlp ("gnuplot", NULL);
-        return; /* Not reached.  */
+        execlp ("gnuplot", "gnuplot", NULL);
+        return 0; /* Not reached.  */
     }
 
     output = fdopen (pipes[1], "w");
