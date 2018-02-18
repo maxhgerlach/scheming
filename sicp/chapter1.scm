@@ -511,7 +511,8 @@
   (search-n-primes start 3))
 
 ;;;; Increasing the number range by a factor of 10 approximately
-;;;; increases the runtime by a factor of 3. ~ sqrt(10) -> sqrt behavior
+;;;; increases the runtime by a factor of 3. ~ sqrt(10) -> sqrt
+;;;; behavior, for large numbers only
 ;;;;
 ;; scheme@(guile-user)> (search-for-primes 1000000000)
 ;; 1000000007 *** 10000000
@@ -533,3 +534,82 @@
 ;; 1000000000061 *** 470000000
 ;; 1000000000063 *** 410000000
 
+
+;; Exercise 1.23
+(define (smallest-divisor n)
+  (define (next num)                    ;skip all even test-divisors larger than 2
+    (if (= num 2) 3 (+ num 2)))
+  (define (find-divisor n test-divisor)
+    (cond ((> (square test-divisor) n) n)
+          ((divides? test-divisor n) test-divisor)
+          (else (find-divisor n (next test-divisor)))))
+  (find-divisor n 2))
+
+;;;; times are now *lower than half* -- was something strange going on before in the old tests?
+
+;; scheme@(guile-user)> (search-for-primes 1000000000)
+;; 1000000007 *** 10000000
+;; 1000000009 *** 10000000
+;; 1000000021 *** 10000000
+;; done
+;; scheme@(guile-user)> (search-for-primes 10000000000)
+;; 10000000019 *** 10000000
+;; 10000000033 *** 20000000
+;; 10000000061 *** 10000000
+;; done
+;; scheme@(guile-user)> (search-for-primes 100000000000)
+;; 100000000003 *** 50000000
+;; 100000000019 *** 40000000
+;; 100000000057 *** 50000000
+;; done
+;; scheme@(guile-user)> (search-for-primes 1000000000000)
+;; 1000000000039 *** 120000000
+;; 1000000000061 *** 120000000
+;; 1000000000063 *** 100000000
+;; done
+
+
+;; Exercise 1.24
+(define (timed-prime-test n)
+  (define (start-prime-test n start-time)
+    (if (fast-prime? n 1000)
+        (report-prime (- (runtime) start-time))))
+  (define (report-prime elapsed-time)
+    (display " *** ")
+    (display elapsed-time))
+  ;; (newline)
+  (display n)
+  (start-prime-test n (runtime))
+  (newline))
+
+;; scheme@(guile-user)> (timed-prime-test 1000000007)
+;; 1000000007    *** 20000000
+;; scheme@(guile-user)> (timed-prime-test 1000000000039)
+;; 1000000000039 *** 60000000
+
+
+;; Exercise 1.25
+;;
+;; (define (expmod base exp m)
+;;   (remainder (fast-expt base exp) m))
+;;
+;; expmod with intermediate computations computed module
+;; m will have to deal with smaller intermediate numbers. Arithmetics
+;; with very large numbers are slow.
+
+
+;; Exercise 1.26
+;;
+;; (define (expmod base exp m)
+;; (cond ((= exp 0) 1)
+;;       ((even? exp)
+;;        (remainder (* (expmod base (/ exp 2) m)    ;; square replaced
+;;                      (expmod base (/ exp 2) m))
+;;                   m))
+;;       (else
+;;        (remainder (* base
+;;                      (expmod base (- exp 1) m))
+;;                   m))))
+;;
+;; By doing the computation (expmod base (/ exp 2) m) twice the
+;; speed-up from halving the exponent is canceled. O(log n) -> O(n)
