@@ -61,10 +61,10 @@
 (a-plus-abs-b 3 4)
 
 ;; exercise 1.5
-(define (p) (p))
+;(define (p) (p))
 ;(p) ;; infinite loop
-(define (test x y)
-  (if (= x 0) 0 y))
+;(define (test x y)
+;  (if (= x 0) 0 y))
 
 ;(test 0 (p)) ;; infinite loop -> Guile seems to use applicative order
               ;; -> (p) is evaluated before the if is encountered
@@ -157,51 +157,51 @@
 
 
 ;;Exercise 1.9
-(define (inc a) (+ a 1))
-(define (dec a) (- a 1))
+;(define (inc a) (+ a 1))
+;(define (dec a) (- a 1))
 ;; I: a linear recursive procedure (growing chain of inc's)
-(define (+ a b)
-  (if (= a 0) b (inc (+ (dec a) b))))
+; (define (+ a b)
+;   (if (= a 0) b (inc (+ (dec a) b))))
 
-(+ 4 5)
-(if (= 4 0) 5 (inc (+ (dec 4) 5)))
-(if #f 5 (inc (+ 3 5)))
-(if #f 5 (inc (if (= 3 0) 5 (inc (+ (dec 3) 5)))))
-(if #f 5 (inc (if #f 5 (inc (+ 2 5)))))
-(if #f 5 (inc (if #f 5 (inc (if (= 2 0) 5 (inc (+ (dec 2) 5)))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (+ 1 5)))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if (= 1 0) 5 (inc (+ (dec 1) 5))) ))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (+ 0 5)))))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #t 5 (inc (+ (dec 0) 5)))))))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc 5))))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 6)))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 (inc 6))))))
-(if #f 5 (inc (if #f 5 (inc (if #f 5 7)))))
-(if #f 5 (inc (if #f 5 (inc 7))))
-(if #f 5 (inc (if #f 5 8)))
-(if #f 5 (inc 8))
-(if #f 5 9)
-9
+; (+ 4 5)
+; (if (= 4 0) 5 (inc (+ (dec 4) 5)))
+; (if #f 5 (inc (+ 3 5)))
+; (if #f 5 (inc (if (= 3 0) 5 (inc (+ (dec 3) 5)))))
+; (if #f 5 (inc (if #f 5 (inc (+ 2 5)))))
+; (if #f 5 (inc (if #f 5 (inc (if (= 2 0) 5 (inc (+ (dec 2) 5)))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (+ 1 5)))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if (= 1 0) 5 (inc (+ (dec 1) 5))) ))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (+ 0 5)))))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #t 5 (inc (+ (dec 0) 5)))))))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc 5))))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc (if #f 5 6)))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 (inc 6))))))
+; (if #f 5 (inc (if #f 5 (inc (if #f 5 7)))))
+; (if #f 5 (inc (if #f 5 (inc 7))))
+; (if #f 5 (inc (if #f 5 8)))
+; (if #f 5 (inc 8))
+; (if #f 5 9)
+; 9
 ;; actually the (if #f ..) would be simplified earlier
 
 ;; II: iterative -- discarding the if's the number of variables to hold state does not grow indefinitely
-(define (+ a b)
-  (if (= a 0) b (+ (dec a) (inc b))))
+; (define (+ a b)
+;   (if (= a 0) b (+ (dec a) (inc b))))
 
-(+ 4 5)
-(if (= 4 0) 5 (+ (dec 4) (inc 5)))
-(if #f 5 (+ (dec 4) (inc 5)))
-(if #f 5 (+ 3 6))
-(if #f 5 (if (= 3 0) 6 (+ (dec 3) (inc 6))))
-(if #f 5 (if #f 6 (+ 2 7)))
-(if #f 5 (if #f 6 (if (= 2 0) 7 (+ (dec 2) (inc 7)))))
-(if #f 5 (if #f 6 (if #f 7 (+ 1 8))))
-(if #f 5 (if #f 6 (if (= a 1) 8 (+ (dec 1) (inc 8)))))
-(if #f 5 (if #f 6 (if #f 8 (+ 0 9))))
-(if #f 5 (if #f 6 (if #f 8 (if (= 0 0) 9 (+ (dec 0) (inc 9))))))
-(if #f 5 (if #f 6 (if #f 8 (if #t 9 (+ -1 10)))))
-(if #f 5 (if #f 6 (if #f 8 9)))
-9
+; (+ 4 5)
+; (if (= 4 0) 5 (+ (dec 4) (inc 5)))
+; (if #f 5 (+ (dec 4) (inc 5)))
+; (if #f 5 (+ 3 6))
+; (if #f 5 (if (= 3 0) 6 (+ (dec 3) (inc 6))))
+; (if #f 5 (if #f 6 (+ 2 7)))
+; (if #f 5 (if #f 6 (if (= 2 0) 7 (+ (dec 2) (inc 7)))))
+; (if #f 5 (if #f 6 (if #f 7 (+ 1 8))))
+; (if #f 5 (if #f 6 (if (= a 1) 8 (+ (dec 1) (inc 8)))))
+; (if #f 5 (if #f 6 (if #f 8 (+ 0 9))))
+; (if #f 5 (if #f 6 (if #f 8 (if (= 0 0) 9 (+ (dec 0) (inc 9))))))
+; (if #f 5 (if #f 6 (if #f 8 (if #t 9 (+ -1 10)))))
+; (if #f 5 (if #f 6 (if #f 8 9)))
+; 9
 
 
 ;; Exercise 1.10: Ackermann's function
@@ -433,3 +433,26 @@
 2
 ;;
 ;; 4 remainder operations
+
+
+;; 1.2.6 Testing for primality
+(define (smallest-divisor n) (find-divisor n 2))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+(define (divides? a b) (= (remainder b a) 0))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder
+          (square (expmod base (/ exp 2) m))
+          m))
+        (else
+         (remainder
+          (* base (expmod base (- exp 1) m))
+          m))))
