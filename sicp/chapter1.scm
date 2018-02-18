@@ -157,6 +157,8 @@
 
 
 ;;Exercise 1.9
+(define (inc a) (+ a 1))
+(define (dec a) (- a 1))
 ;; I: a linear recursive procedure (growing chain of inc's)
 (define (+ a b)
   (if (= a 0) b (inc (+ (dec a) b))))
@@ -278,3 +280,46 @@
 ;; invocations ~ ceil(ln(10 * angle) / ln(3))
 ;;
 ;; O(log(angle))
+
+
+;; 1.2.4 Exponentiation
+(define (expt b n)
+  (if (= n 0)
+      1
+      (* b (expt b (- n 1))))) ; O(n) space, O(n) steps
+
+(define (expt b n)
+  (expt-iter b n 1))
+(define (expt-iter b counter product)
+  (if (= counter 0)
+      product
+      (expt-iter b
+                 (- counter 1)
+                 (* b product))))       ; O(1) space, O(n) steps
+
+(define (fast-expt b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1)))))) ; O(log n) space and steps
+(define (square a)
+  (* a a))
+(define (even? n)
+  (= (remainder n 2) 0))
+
+;; Exercise 1.16
+;;
+;; [n odd]
+;; b^n = a b^n        , a = 1, base=b
+;;     = a b^(n-1)    , a = b, base=b
+;;     = a (b^2)^((n-1)/2),    base=b^2
+;;
+;; a accumulates factors until it is the result,
+;; base will be squared again and again,
+;; exponent will be halved or decremented as necessary
+(define (fast-expt-i b n)
+  (define (fast-expt-iter a base exponent)
+    (cond ((= exponent 0) a)
+          ((not (even? exponent))
+           (fast-expt-iter (* a base) base (- exponent 1)))
+          (else (fast-expt-iter a (square base) (/ exponent 2)))))
+  (fast-expt-iter 1 b n))
