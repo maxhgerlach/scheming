@@ -456,3 +456,80 @@
          (remainder
           (* base (expmod base (- exp 1) m))
           m))))
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define true #t)
+(define false #f)
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else false)))
+
+
+;; exercise 1.21
+(smallest-divisor 199)                  ;199
+(smallest-divisor 1999)                 ;1999
+(smallest-divisor 19999)                ;7
+
+
+;; exercise 1.22
+(define (runtime) (tms:clock (times)))
+
+(define (timed-prime-test n)
+  ;; (newline)
+  (display n)
+  (start-prime-test n (runtime))
+  (newline))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (next-odd int)
+  (if (even? int) (+ int 1) (+ int 2)))
+(define (announce-prime number start-time)
+  (display number)
+  (report-prime (- (runtime) start-time))
+  (newline)
+  number)
+(define (examine beg start-time)
+  (if (prime? beg)
+      (announce-prime beg start-time)
+      (examine (next-odd beg) (runtime))))
+(define (search-n-primes beg n)
+  (if (<= n 0) (display "done\n")
+      (search-n-primes (next-odd (examine beg (runtime)))
+       (- n 1))
+      ))
+(define (search-for-primes start)
+  (search-n-primes start 3))
+
+;;;; Increasing the number range by a factor of 10 approximately
+;;;; increases the runtime by a factor of 3. ~ sqrt(10) -> sqrt behavior
+;;;;
+;; scheme@(guile-user)> (search-for-primes 1000000000)
+;; 1000000007 *** 10000000
+;; 1000000009 *** 30000000
+;; 1000000021 *** 10000000
+;; done
+;; scheme@(guile-user)> (search-for-primes 10000000000)
+;; 10000000019 *** 40000000
+;; 10000000033 *** 30000000
+;; 10000000061 *** 50000000
+;; done
+;; scheme@(guile-user)> (search-for-primes 100000000000)
+;; 100000000003 *** 140000000
+;; 100000000019 *** 130000000
+;; 100000000057 *** 120000000
+;; done
+;; scheme@(guile-user)> (search-for-primes 1000000000000)
+;; 1000000000039 *** 450000000
+;; 1000000000061 *** 470000000
+;; 1000000000063 *** 410000000
+
