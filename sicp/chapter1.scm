@@ -613,3 +613,66 @@
 ;;
 ;; By doing the computation (expmod base (/ exp 2) m) twice the
 ;; speed-up from halving the exponent is canceled. O(log n) -> O(n)
+
+
+
+;; Chapter 1.3.1
+(define (cube x) (* x x x))
+
+(define (sum term a next b)
+  (if (> a b)
+      0
+      (+ (term a)
+         (sum term (next a) next b))))
+
+(define (inc n) (+ n 1))
+(define (sum-cubes a b)
+  (sum cube a inc b))
+(define (identity x) x)
+(define (sum-integers a b)
+  (sum identity a inc b))
+(define (pi-sum a b)
+  (define (pi-term x)
+    (/ 1.0 (* x (+ x 2))))
+  (define (pi-next x)
+    (+ x 4))
+  (sum pi-term a pi-next b))
+
+(define (integral f a b dx)
+  (define (add-dx x)
+    (+ x dx))
+  (* (sum f (+ a (/ dx 2.0)) add-dx b)
+     dx))
+;; scheme@(guile-user)> (integral cube 0 1 0.01)
+;; $6 = 0.24998750000000042
+;; scheme@(guile-user)> (integral cube 0 1 0.001)
+;; $7 = 0.249999875000001
+
+
+;; Exercise 1.29
+(define (simp-integral f a b n)
+  (define h (/ (- b a) n))
+  (define (next-k k) (+ k 1))
+  (define (simp-term k)
+    (* (f (+ a (* k h)))
+       (cond ((= 0 k) 1)
+             ((= n k) 1)
+             ((even? k) 2)
+             (else 4))))
+  (* (/ h 3)
+     (sum simp-term 0 next-k n)))
+
+;; scheme@(guile-user)> (simp-integral cube 0. 1. 100)
+;; $4 = 0.24999999999999992
+;; scheme@(guile-user)> (simp-integral cube 0. 1. 1000)
+;; $5 = 0.2500000000000003
+
+
+;; Exercise 1.30
+;; iterative sum
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ result (term a)))))
+  (iter a 0))
