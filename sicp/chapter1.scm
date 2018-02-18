@@ -336,3 +336,11 @@
   (cond ((= b 0) 0)
         ((even? b) (double (fast-my* a (halve b))))
         (else (+ a (fast-my* a (- b 1))))))
+
+;; Exercise 1.18
+(define (fast-my*-i a b)
+  (define (*iter x a b)
+    (cond ((= 0 b) x)
+          ((not (even? b)) (*iter (+ x a) a (- b 1)))
+          (else (*iter x (double a) (halve b)))))
+  (*iter 0 a b))
