@@ -676,3 +676,38 @@
         result
         (iter (next a) (+ result (term a)))))
   (iter a 0))
+
+
+;; Exercise 1.31
+;;
+;; product here implemented as an iterative proces
+
+(define (product term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (* result (term a)))))
+  (iter a 1))
+
+(define (factorial n)
+  (product identity 1 inc n))
+
+(define (wallis-pi steps)
+  (define (pi-factor k)
+    (if (even? k)
+        (/ (+ k 2) (+ k 1))
+        (/ (+ k 1) (+ k 2))))
+  (* 4. (product pi-factor 1 inc steps)))
+
+;; scheme@(guile-user) [1]> (wallis-pi 10)
+;; $11 = 3.2751010413348074
+;; scheme@(guile-user) [1]> (wallis-pi 100)
+;; $12 = 3.1570301764551676
+;; scheme@(guile-user) [1]> (wallis-pi 1000)
+;; $13 = 3.1431607055322663
+
+(define (product-rec term a next b)
+  (if (> a b) 1
+      (* (term a) (product-rec term (next a) next b))))
+(define (factorial-rec n)
+  (product-rec identity 1 inc n))
