@@ -711,3 +711,31 @@
       (* (term a) (product-rec term (next a) next b))))
 (define (factorial-rec n)
   (product-rec identity 1 inc n))
+
+
+
+;; Exercise 1.32
+
+(define (accumulate combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (combiner result (term a)))))
+  (iter a null-value))
+
+;; (accumulate * 1 identity 1 inc 69)
+;; $17 = 171122452428141311372468338881272839092270544893520369393648040923257279754140647424000000000000000
+
+(define (acc-product term a next b)
+  (accumulate * 1 term a next b))
+(define (acc-sum term a next b)
+  (accumulate + 0 term a next b))
+
+(define (accumulate-rec combiner null-value term a next b)
+  (if (> a b)
+      null-value
+      (combiner (term a) (accumulate-rec combiner null-value term (next a) next b))))
+
+;; (accumulate-rec * 1 identity 1 inc 69)
+;; $18 = 171122452428141311372468338881272839092270544893520369393648040923257279754140647424000000000000000
+
