@@ -739,3 +739,36 @@
 ;; (accumulate-rec * 1 identity 1 inc 69)
 ;; $18 = 171122452428141311372468338881272839092270544893520369393648040923257279754140647424000000000000000
 
+
+
+;; Exercise 1.33
+
+(define (filtered-accumulate filter? combiner null-value term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (combiner result (if (filter? a) (term a) null-value)))))
+  (iter a null-value))
+
+;; scheme@(guile-user) [3]> (filtered-accumulate even? + 0 identity 0 inc 10)
+;; $19 = 30
+;; scheme@(guile-user) [3]> (+ 2 4 6 8 10)
+;; $20 = 30
+
+
+(define (sum-of-squared-primes a b)
+  (define (prime-not-1? x)              ;proper def. of a prime
+    (and (> x 1) (prime? x)))
+  (filtered-accumulate prime-not-1? + 0 square a inc b))
+
+;; scheme@(guile-user) [3]> (sum-of-squared-primes 1 5)
+;; $24 = 38
+
+(define (product-of-relatively-prime-smaller n)
+  (define (pred? i)
+    (= 1 (gcd i n)))
+  (filtered-accumulate pred? * 1 identity 1 inc (- n 1)))
+
+;; (product-of-relatively-prime-smaller 10)
+;; $27 = 189
+
