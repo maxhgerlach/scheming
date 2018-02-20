@@ -850,7 +850,54 @@
   (try first-guess))
 
 ; (verbose-fixed-point (lambda (x) (+ 1. (/ 1. x))) 1.0)
-
 (verbose-fixed-point (lambda (x) (/ (log 1000) (log x))) 1.5) ;35 steps until 4.555539351985717
-
 (verbose-fixed-point (lambda (x) (average x (/ (log 1000) (log x)))) 1.5) ;11 steps until 4.555537952796512
+
+
+;; Exercise 1.37
+
+(/ 1 (fixed-point (lambda (x) (+ 1. (/ 1. x))) 1.0)) ;=> 0.6180344478216819 is 1/phi
+
+(define (cont-frac n d k)
+  (define (sub-frac i)
+    (/ (n i) (+ (d i) (if (>= i k)
+                          0
+                          (sub-frac (+ i 1))))))
+  (sub-frac 1))
+
+
+(define (show-cont-fracs k-start k-end)
+  (define (step k)
+    (let ((cf (cont-frac (lambda (i) 1.0)
+                        (lambda (i) 1.0)
+                        k)))
+      (display cf)
+      (newline)
+      (if (> k k-end)
+          cf
+          (step (+ k 1)))))
+  (step 1))
+    
+;; scheme@(guile-user) [3]> (show-cont-fracs 1 10)
+;; 1.0
+;; 0.5
+;; 0.6666666666666666
+;; 0.6000000000000001
+;; 0.625
+;; 0.6153846153846154
+;; 0.6190476190476191
+;; 0.6176470588235294
+;; 0.6181818181818182
+;; 0.6179775280898876
+;; 0.6180555555555556
+
+
+
+
+;; Exercise 1.38
+
+(+ (cont-frac (lambda (i) 1.0)
+              (lambda (i) (if (= 0 (remainder (+ i 1) 3))
+                              (* 2. (/ (+ i 1) 3))
+                              1.0))
+              10) 2)                    ; => 2.7182817182817183
