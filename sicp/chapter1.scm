@@ -777,11 +777,11 @@
 ;; Exercise 1.34
 
 (define (f g) (g 2))
-(f f)
-ERROR: In procedure 2:
-ERROR: Wrong type to apply: 2
+;; (f f)
+;; ERROR: In procedure 2:
+;; ERROR: Wrong type to apply: 2
 
 ;; recursive application 
-(f f)
-(f 2)
-(2 2) ; error
+;(f f)
+;(f 2)
+;(2 2) ; error
