@@ -901,3 +901,19 @@
                               (* 2. (/ (+ i 1) 3))
                               1.0))
               10) 2)                    ; => 2.7182817182817183
+
+
+
+;; Exercise 1.39
+
+(define (tan-cf x k)
+  (cont-frac (lambda (i) (if (= i 1)
+                             x
+                             (- (square x))))
+             (lambda (i) (- (* 2 i) 1))
+             k))
+
+;; scheme@(guile-user) [1]> (tan-cf 0.5 10)
+;; $13 = 0.5463024898437905
+;; scheme@(guile-user) [1]> (tan 0.5)
+;; $14 = 0.5463024898437905
