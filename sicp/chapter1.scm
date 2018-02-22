@@ -917,3 +917,71 @@
 ;; $13 = 0.5463024898437905
 ;; scheme@(guile-user) [1]> (tan 0.5)
 ;; $14 = 0.5463024898437905
+
+
+
+;; Exercise 1.40
+(define (deriv g)
+  (lambda (x) (/ (- (g (+ x dx)) (g x)) dx)))
+(define dx 0.00001)
+(define (cube x) (* x x x))
+(define (newton-transform g)
+  (lambda (x) (- x (/ (g x) ((deriv g) x)))))
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+
+(define (cubic a b c)
+  (lambda (x) (+ (cube x) (* a (square x)) (* b x) c)))
+
+
+;; Exercise 1.41
+(define (double f)
+  (lambda (x) (f (f x))))
+
+(((double (double double)) inc) 5)      ;21
+(((double (lambda (x) (double (double x)))) inc) 5)
+(((lambda (y)
+    ((lambda (x)
+       (double (double x)))
+     ((lambda (x) (double (double x))) y)))
+  inc)
+ 5)
+(((lambda (y)
+    (double (double (double (double y)))))
+  inc)
+ 5)
+((double                                ; x -> x+16
+  (double                               ; x -> x+8
+   (double                              ; x -> x+4
+    (double inc))))                     ; x -> x+2
+ 5)
+
+;; on the contrary:
+((double ((double double) inc)) 5)      ;13
+
+
+;; Exercise 1.42
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+((compose square inc) 6)                ;49
+
+
+;; Exercise 1.43
+(define (repeated f n)
+  (if (= n 1)
+      (lambda (x) (f x))
+      (compose f
+               (repeated f (- n 1)))))
+
+((repeated square 2) 5)                 ;625
+
+
+;; Exercise 1.44
+(define (smoothed f)
+  (lambda (x) (/ (+ (f (- x dx)) (f x) (f (+ x dx)))
+               3)))
+
+(define (n-fold-smooth f n)
+  ((repeated smoothed n) f))
