@@ -985,3 +985,64 @@
 
 (define (n-fold-smooth f n)
   ((repeated smoothed n) f))
+
+
+;; Exercise 1.45
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+(let ((x 2.))
+  (verbose-fixed-point (average-damp (lambda (y) (/ x y))) 1)) ;1.4142156862745097
+(let ((x 2.))
+  (verbose-fixed-point (average-damp (lambda (y) (/ x (square y)))) 1)) ;1.2599166768842038
+;; (let ((x 2.))
+;;   (verbose-fixed-point (average-damp (lambda (y) (/ x (cube y)))) 1))
+(let ((x 2.))
+  (verbose-fixed-point
+   ((repeated average-damp 2) (lambda (y) (/ x (expt y 3))))
+   1))                                  ;1.189207115002721
+(let ((x 2.))
+  (verbose-fixed-point
+   ((repeated average-damp 2) (lambda (y) (/ x (expt y 4)))) 
+   1))                                  ;1.1486967244204176
+(let ((x 2.))
+  (verbose-fixed-point
+   ((repeated average-damp 2) (lambda (y) (/ x (expt y 5)))) 
+   1))                                  ;1.1224648393618204
+
+
+
+(define (log2 x) (/ (log x) (log 2))) 
+(define (nth-root n x) 
+  (fixed-point ((repeated average-damp (floor (log2 n)))  
+                (lambda (y) (/ x (expt y (- n 1))))) 
+               1.0))
+
+
+;; Exercise 1.46
+(define (iterative-improve good-enough? improve)
+  (define (try guess)
+    (if (good-enough? guess)
+        guess
+        (try (improve guess))))
+  (lambda (guess) (try guess)))
+
+(define (sqrt x)
+  ((iterative-improve
+    (lambda (guess) (< (abs (- (square guess) x)) 0.001))
+    (lambda (guess) (average guess (/ x guess))))
+   1.0))
+
+;; (sqrt 2.0)
+;; $8 = 1.4142156862745097
+
+(define tolerance 0.00001)
+(define (fixed-point f first-guess)
+  ((iterative-improve
+    (lambda (guess)
+      (< (abs (- guess (f guess)))
+         tolerance))
+    (lambda (guess) (f guess)))
+   first-guess))
+
+;; (fixed-point cos 1.0)
+;; $10 = 0.7390893414033927
