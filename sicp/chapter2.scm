@@ -35,9 +35,9 @@
       (gcd b (remainder a b))))
 
 ;; make-rat improvement 1: used gcd
-(define (make-rat n d)
-  (let ((g (gcd n d)))
-    (cons (/ n g) (/ d g))))
+; (define (make-rat n d)
+;   (let ((g (gcd n d)))
+;     (cons (/ n g) (/ d g))))
 
 
 ;; Exercise 2.1
@@ -48,3 +48,38 @@
       (let ((new-d (abs signed-d)))
         (let ((sign-d (/ signed-d new-d)))
           (cons (* sign-d (/ n g)) new-d))))))
+
+;; Exercise 2.2
+(define (make-point x y)
+  (cons x y))
+(define (x-point p) (car p))
+(define (y-point p) (cdr p))
+(define (sub-point p1 p2)
+  (make-point (- (x-point p1) (x-point p2))
+              (- (y-point p1) (y-point p2))))
+(define (add-point p1 p2)
+  (make-point (+ (x-point p1) (x-point p2))
+              (+ (y-point p1) (y-point p2))))
+(define (div-point p scalar)
+  (make-point (/ (x-point p) scalar)
+              (/ (y-point p) scalar)))
+
+(define (make-segment p1 p2)
+  (cons p1 p2))
+(define (start-segment seg)
+  (car seg))
+(define (end-segment seg)
+  (cdr seg))
+
+(define (midpoint-segment seg)
+  (add-point (start-segment seg)
+             (div-point (sub-point (end-segment seg) (start-segment seg))
+                        2)))
+
+(define (print-point p)
+  (display "(")
+  (display (x-point p))
+  (display ",")
+  (display (y-point p))
+  (display ")")
+  (newline))
