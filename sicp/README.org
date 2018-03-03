@@ -5,4 +5,5 @@
   - Emacs-REPL: [[http://www.nongnu.org/geiser/geiser_3.html#The-REPL]], M-x run-geiser
 ** Chapter 1
    [[file:chapter1.scm][chapter1.scm]]
-   
+** Chapter 2
+   [[chapter2.scm]]
