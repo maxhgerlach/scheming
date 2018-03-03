@@ -118,3 +118,37 @@
   (if (= 0 (remainder x 2))
       (power-cdr (/ x 2))
       (/ (log x) (log 3))))
+
+
+;; Exercise 2.6 Church numerals
+(define zero (lambda (f) (lambda (x) x)))
+(define (add-1 n)
+  (lambda (f) (lambda (x) (f ((n f) x)))))
+
+;; (add-1 zero)
+;; (lambda (f) (lambda (x) (f ((zero f) x))))
+;; (lambda (f) (lambda (x) (f x)))
+(define one
+  (lambda (f) (lambda (x) (f x))))
+(define two
+  (lambda (f) (lambda (x) (f (f x)))))
+
+
+(define (int-to-church n) 
+  (define (iter a result) 
+    (if (> a n) 
+        zero 
+        (add-1 (iter (+ a 1) result)) 
+        )) 
+  (iter 1 zero)) 
+
+(define (church-to-int cn) 
+  ((cn (lambda (n) (+ n 1))) 0))
+
+(define (add-some a b)
+  (lambda (f)
+    (lambda (x)
+      ((a f) ((b f) x)))))
+
+;; (church-to-int (add-some two (add-some one two)))
+;; $26 = 5
