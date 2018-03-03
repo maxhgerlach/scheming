@@ -105,3 +105,16 @@
 
 ;; (my-cdr (my-cons 1 2))
 ;; 2
+
+
+;; Exercise 2.5 [uses float representation]
+(define (power-cons a b)
+  (* (expt 2 a) (expt 3 b)))
+(define (power-car x)
+  (if (= 0 (remainder x 3))
+      (power-car (/ x 3))
+      (/ (log x) (log 2))))
+(define (power-cdr x)
+  (if (= 0 (remainder x 2))
+      (power-cdr (/ x 2))
+      (/ (log x) (log 3))))
