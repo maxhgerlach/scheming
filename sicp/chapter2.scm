@@ -152,3 +152,61 @@
 
 ;; (church-to-int (add-some two (add-some one two)))
 ;; $26 = 5
+
+
+;; 2.1.4 Extended Exercise: Interval Arithmetic
+(define (add-interval x y)
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+(define (mul-interval x y)
+  (let ((p1 (* (lower-bound x) (lower-bound y)))
+        (p2 (* (lower-bound x) (upper-bound y)))
+        (p3 (* (upper-bound x) (lower-bound y)))
+        (p4 (* (upper-bound x) (upper-bound y))))
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+(define (div-interval x y)
+  (mul-interval
+   x
+   (make-interval (/ 1.0 (upper-bound y))
+                  (/ 1.0 (lower-bound y)))))
+
+;; Exercise 2.7
+(define (make-interval a b) (cons a b))
+(define (upper-bound int) (cdr int))
+(define (lower-bound int) (car int))
+
+;; (mul-interval (make-interval 10 12) (make-interval 8 9)) ;(80 . 108)
+;; (add-interval (make-interval 10 12) (make-interval 8 9)) ;(18 . 21)
+
+;; Exercise 2.8
+(define (sub-interval x y)
+  (make-interval (- (lower-bound x) (upper-bound y))
+                 (- (upper-bound x) (lower-bound y))))
+;; (sub-interval (make-interval 10 12) (make-interval 8 9)) ; (1 . 4)
+;; (sub-interval (make-interval 10 12) (make-interval -8 9)) ; (1 . 20)
+
+
+;; Exercise 2.9
+(define (width interval) (- (upper-bound interval) (lower-bound interval)))
+
+;; (width (add-interval x y))
+;; = (width 
+;;    (make-interval (+ (lower-bound x) (lower-bound y))
+;;                   (+ (upper-bound x) (upper-bound y))))
+;; = (- (+ (upper-bound x) (upper-bound y))
+;;      (+ (lower-bound x) (lower-bound y)))
+;; = (+ (- (upper-bound x) (lower-bound x))
+;;      (- (upper-bound y) (lower-bound y)))
+;; = (+ (width x) (width y))
+;;
+;; (width (sub-interval x y))
+;; = (width (add-interval x (- y)))
+;; = (+ (width x) (width (-y)))
+;; = (- (width x) (width y))
+;;
+;; (mul-interval (make-interval -1 1) (make-interval 10 11)) = (-11, 11)     | width is 22
+;; (mul-interval (make-interval -1 1) (make-interval 100 101)) = (-101, 101) | width is 202
+;;
+;; similar for division
+
