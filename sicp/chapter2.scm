@@ -43,7 +43,7 @@
 ;; Exercise 2.1
 ;; make-rat improvement 2: handle signs
 (define (make-rat n d)
-  (let ((g (gcd n d)))
+  (let ((g (gcd n d)))                  ;this would be neater with let*
     (let ((signed-d (/ d g)))
       (let ((new-d (abs signed-d)))
         (let ((sign-d (/ signed-d new-d)))
