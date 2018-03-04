@@ -3,7 +3,12 @@
   - guide to approaching the book using the Guile dialect of Scheme:
     [[https://github.com/zv/SICP-guile]]
   - Emacs-REPL: [[http://www.nongnu.org/geiser/geiser_3.html#The-REPL]], M-x run-geiser
+
+
 ** Chapter 1
    [[file:chapter1.scm][chapter1.scm]]
+
+
 ** Chapter 2
+   `nil` is not defined in modern Scheme, so just use `'()` instead.
    [[chapter2.scm]]
