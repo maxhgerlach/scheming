@@ -239,3 +239,92 @@
 
 
 ;; skipping ex. 2.13...16
+
+
+;; Chapter 2.2.1
+;; nil is no longer in Scheme, use '()
+
+
+;; Exercise 2.17
+;; (define (last-pair l)
+;;   (let ((len (length l)))
+;;     (cond ((<= len 1) l)                  ;will return '() if l is empty, else last element
+;;           (else (last-pair (cdr l))))))
+;; calling length repeatedly is not very efficient, better:
+(define (last-pair l)
+  (define (last-pair-non-nil l)
+    (let ((rest (cdr l)))
+      (if (null? rest)
+          l
+          (last-pair-non-nil rest))))
+  (if (null? l)
+      l
+      (last-pair-non-nil l)))
+            
+      
+;; Exercise 2.18
+(define (reverse l)
+  (define (reversor l1 l2)
+    (if (null? l1)
+        l2
+        (reversor (cdr l1) (cons (car l1) l2))))
+  (reversor l '()))
+
+
+;; Exercise 2.19
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount
+                (except-first-denomination
+                 coin-values))
+            (cc (- amount
+                   (first-denomination
+                    coin-values))
+                coin-values)))))
+
+(define (first-denomination coin-values)
+  (car coin-values))
+(define (except-first-denomination coin-values)
+  (cdr coin-values))
+(define (no-more? coin-values)
+  (null? coin-values))
+
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+
+;; scheme@(guile-user)> (cc 100 us-coins)
+;; $23 = 292
+;; scheme@(guile-user)> (cc 100 uk-coins)
+;; $24 = 104561
+
+
+;; Exercise 2.20
+(define (same-parity starter . arguments)
+  (define (take-these f? arguments)
+    (cond ((null? arguments) '())
+          ((f? (car arguments)) (cons (car arguments) (take-these f? (cdr arguments))))
+          (else (take-these f? (cdr arguments)))))
+  (cons starter (if (even? starter)
+                    (take-these even? arguments)
+                    (take-these odd? arguments))))
+
+
+
+;; Mapping over lists
+(define (scale-list items factor)
+  (map (lambda (x) (* x factor))
+       items))
+
+;; Exercise 2.21
+(define (square x) (* x x))
+(define (square-list-1 items)
+  (if (null? items)
+      '()
+      (cons (square (car items)) (square-list-1 (cdr items)))))
+(define (square-list-2 items)
+  (map square items))
+
+
+;; Exercise 2.22
