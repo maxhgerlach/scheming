@@ -411,3 +411,62 @@
 
 
 ;; Exercise 2.29
+(define (make-mobile left right)
+  (list left right))
+
+(define (make-branch length structure)
+  ;; length: number
+  ;; structure: mobile or number
+  (list length structure))
+
+(define (left-branch mobile)
+  (car mobile))
+(define (right-branch mobile)
+  (cadr mobile))
+(define (branch-length branch)
+  (car branch))
+(define (branch-structure branch)
+  (cadr branch))
+
+(define (total-weight mobile)
+  (+ (structure-weight (branch-structure (left-branch mobile)))
+     (structure-weight (branch-structure (right-branch mobile)))))
+
+(define (structure-weight structure)
+  (if (not (pair? structure))
+      structure
+      (total-weight structure)))
+
+;; (define mob 
+;;   (make-mobile 
+;;    (make-branch 4 10)
+;;    (make-branch 5 
+;;                 (make-mobile (make-branch 2 3)
+;;                              (make-branch 8 10)))))
+;; (total-weight mob)
+;; $18 = 23
+
+(define (structure-balanced? structure)
+  (if (not (pair? structure))
+      #t
+      (mobile-balanced? structure)))
+
+(define (branch-torque branch)
+  (* (branch-length branch)
+     (structure-weight (branch-structure branch))))
+
+(define (mobile-balanced? mobile)
+  (and (= (branch-torque (left-branch mobile))
+          (branch-torque (right-branch mobile)))
+       (structure-balanced? (branch-structure (left-branch mobile)))
+       (structure-balanced? (branch-structure (right-branch mobile)))))
+
+
+;; new: (define (make-mobile left right) (cons left right))
+;;      (define (make-branch length structure)
+;;         (cons length structure))
+;; necessary changes:
+;; (define (right-branch mobile)
+;;   (cdr mobile))
+;; (define (branch-structure branch)
+;;   (cdr branch))
