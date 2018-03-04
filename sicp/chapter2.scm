@@ -479,9 +479,19 @@
         (else (cons (square-tree-1 (car tree))
                     (square-tree-1 (cdr tree))))))
 
-(define (square-tree tree)
+(define (square-tree-2 tree)
   (map (lambda (sub-tree)
          (if (pair? sub-tree)
              (square-tree sub-tree)
              (square sub-tree)))
        tree))
+
+;; Exercise 2.31
+(define (tree-map func tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (tree-map func sub-tree)
+             (func sub-tree)))
+       tree))
+
+(define (square-tree tree) (tree-map square tree))
