@@ -495,3 +495,15 @@
        tree))
 
 (define (square-tree tree) (tree-map square tree))
+
+
+;; Exercise 2.32
+(define (subsets s)
+  (if (null? s)
+      (list '())
+      (let ((rest (subsets (cdr s))))
+        (append
+         rest (map
+               (lambda (rest-el)
+                 (cons (car s) rest-el))
+               rest)))))
