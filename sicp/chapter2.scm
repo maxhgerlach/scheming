@@ -358,3 +358,56 @@
   (cond ((null? lst) #t)
         (else (f (car lst))
               (my-for-each f (cdr lst)))))
+
+
+;; Hierarchical Structures
+(define (count-leaves x)
+  (cond ((null? x) 0)
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))))))
+
+;; Exercise 2.25
+
+;; (define x (list 1 3 (list 5 7) 9))
+;; (car (cdr (car (cdr (cdr x)))))
+;; $61 = 7
+
+;; (car (car (list (list 7))))
+;; $62 = 7
+
+;; (define y (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7)))))))
+;; (cadr (cadr (cadr (cadr (cadr (cadr y))))))
+;; $72 = 7
+
+
+;; Exercise 2.26
+;; (append x y)
+;; $73 = (1 2 3 4 5 6)
+;; scheme@(guile-user)> (cons x y)
+;; $74 = ((1 2 3) 4 5 6)
+;; scheme@(guile-user)> (list x y)
+;; $75 = ((1 2 3) (4 5 6))
+
+
+;; Exercise 2.27
+(define (deep-reverse l)
+  (define (reversor l1 l2)
+    (if (null? l1)
+        l2
+        (reversor (cdr l1)
+                  (cons (deep-reverse (car l1)) l2))))
+  (if (pair? l)
+      (reversor l '())
+      l))
+
+
+;; Exercise 2.28
+(define (fringe x)
+  (cond ((null? x) x)
+        ((not (pair? x)) (list x))
+        (else (append (fringe (car x))
+                      (fringe (cdr x))))))
+
+
+;; Exercise 2.29
