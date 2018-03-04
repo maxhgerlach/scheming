@@ -470,3 +470,18 @@
 ;;   (cdr mobile))
 ;; (define (branch-structure branch)
 ;;   (cdr branch))
+
+
+;; Exercise 2.30
+(define (square-tree-1 tree)
+  (cond ((null? tree) '())
+        ((not (pair? tree)) (square tree))
+        (else (cons (square-tree-1 (car tree))
+                    (square-tree-1 (cdr tree))))))
+
+(define (square-tree tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (square-tree sub-tree)
+             (square sub-tree)))
+       tree))
