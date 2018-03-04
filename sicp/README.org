@@ -10,5 +10,6 @@
 
 
 ** Chapter 2
-   `nil` is not defined in modern Scheme, so just use `'()` instead.
+   ~nil~ is not defined in modern Scheme, so just use ~'()~ instead.
+
    [[chapter2.scm]]
