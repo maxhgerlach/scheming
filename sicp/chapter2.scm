@@ -328,3 +328,33 @@
 
 
 ;; Exercise 2.22
+(define (square-list-iter1 items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons (square (car things))
+                    answer))))
+  (iter items '()))
+
+;; In ech iteration step, we square the first element of things, put
+;; it to the start of answer, then throw away the first element of
+;; things. This reverses the list.
+
+(define (square-list-iter2 items)
+  (define (iter things answer)
+    (if (null? things)
+        answer
+        (iter (cdr things)
+              (cons answer
+                    (square (car things))))))
+  (iter items '()))
+
+;; cons'ing in this way does not build a proper list.
+
+
+;; Exercise 2.23
+(define (my-for-each f lst)
+  (cond ((null? lst) #t)
+        (else (f (car lst))
+              (my-for-each f (cdr lst)))))
