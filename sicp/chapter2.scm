@@ -570,3 +570,28 @@
 ;; $38 = ((2 3) (5 6) (8 9) (11 12))
 ;; scheme@(guile-user)> (accumulate-n + 0 s)
 ;; $39 = (22 26 30)
+
+
+;; Exercise 2.37
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(define (matrix-*-vector m v)
+  (map (lambda (row) (dot-product row v)) m))
+
+(define (transpose mat)
+  (accumulate-n cons '()  mat))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (v) (matrix-*-vector m v)) cols)))
+
+;; (define m (list (list 1 2 3 4) (list 4 5 6 6) (list 6 7 8 9)))
+;; scheme@(guile-user)> (define v (list 0 0 0 1))
+;; scheme@(guile-user)> (define v (list 0 1 2 1))
+;; scheme@(guile-user)> (matrix-*-vector m v)
+;; $42 = (12 23 32)
+;; scheme@(guile-user)> (transpose m)
+;; $43 = ((1 4 6) (2 5 7) (3 6 8) (4 6 9))
+;; scheme@(guile-user)> (matrix-*-matrix m (transpose m))
+;; $45 = ((30 56 80) (56 113 161) (80 161 230))
