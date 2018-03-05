@@ -555,3 +555,18 @@
 ;; (count-leaves-acc (cons (list 1 2 (list 3 '() (list 7 8 9) )) (list 3 4)))
 ;; $36 = 8
 
+
+;; Exercise 2.36
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+             '()
+             (cons (accumulate op init (map car seqs))
+                   (accumulate-n op init (map cdr seqs)))))
+
+;; (define s (list (list 1 2 3) (list 4 5 6) (list 7 8 9) (list 10 11 12)))
+;; scheme@(guile-user)> (map car s)
+;; $37 = (1 4 7 10)
+;; scheme@(guile-user)> (map cdr s)
+;; $38 = ((2 3) (5 6) (8 9) (11 12))
+;; scheme@(guile-user)> (accumulate-n + 0 s)
+;; $39 = (22 26 30)
