@@ -618,7 +618,8 @@
 (fold-left list '() (list 1 2 3)) ; (((() 1) 2) 3)
 
 
-;; for commutative op's fold-left and fold-right are equivalent
+;; for commutative and associative op's fold-left and fold-right are
+;; equivalent
 
 
 ;; Exercise 2.39
