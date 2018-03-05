@@ -534,3 +534,24 @@
               coefficient-sequence))
 
 ;; (horner-eval 2 (list 1 3 0 5 0 1))      ;79
+
+
+;; Exercise 2.35
+
+;; (define (count-leaves x)
+;;   (cond ((null? x) 0)
+;;         ((not (pair? x)) 1)
+;;         (else (+ (count-leaves (car x))
+;;                  (count-leaves (cdr x))))))
+
+(define (count-leaves-acc t)
+  (accumulate + 0
+              (map
+               (lambda (x)
+                 (cond ((null? x) 0)
+                       ((not (pair? x)) 1)
+                       (else (count-leaves-acc x))))
+               t)))
+;; (count-leaves-acc (cons (list 1 2 (list 3 '() (list 7 8 9) )) (list 3 4)))
+;; $36 = 8
+
