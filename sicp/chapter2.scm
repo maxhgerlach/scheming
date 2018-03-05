@@ -619,3 +619,23 @@
 
 
 ;; for commutative op's fold-left and fold-right are equivalent
+
+
+;; Exercise 2.39
+
+(define (reverse l)
+  (define (reversor l1 l2)
+    (if (null? l1)
+        l2
+        (reversor (cdr l1) (cons (car l1) l2))))
+  (reversor l '()))
+
+(define (reverse-fr sequence)
+  (fold-right (lambda (x y) (append y (list x))) '() sequence))
+
+;; (reverse-fr (list 1 2 3))               ; (3 2 1)
+
+(define (reverse-fl sequence)
+  (fold-left (lambda (x y) (cons y x )) '() sequence))
+
+;; (reverse-fl (list 1 2 3))               ; (3 2 1)
