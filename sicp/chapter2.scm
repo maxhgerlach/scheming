@@ -595,3 +595,27 @@
 ;; $43 = ((1 4 6) (2 5 7) (3 6 8) (4 6 9))
 ;; scheme@(guile-user)> (matrix-*-matrix m (transpose m))
 ;; $45 = ((30 56 80) (56 113 161) (80 161 230))
+
+
+;; Exercise 2.38
+(define fold-right accumulate)
+
+;; (fold-right / 1 (list 1 2 3)) ; 3/2
+;; 1, (/ 3 1)=3, (/ 2 3)=2/3, (/ 1 2/3)=3/2
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
+;; (fold-left / 1 (list 1 2 3)) ; 1/6
+
+(fold-right list '() (list 1 2 3)) ; (1 (2 (3 ())))
+
+(fold-left list '() (list 1 2 3)) ; (((() 1) 2) 3)
+
+
+;; for commutative op's fold-left and fold-right are equivalent
