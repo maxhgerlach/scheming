@@ -728,3 +728,69 @@
 
 ;; (unique-triples 5)
 ;; => ((3 2 1) (4 2 1) (4 3 1) (4 3 2) (5 2 1) (5 3 1) (5 3 2) (5 4 1) (5 4 2) (5 4 3))
+
+
+;; Exercise 2.42
+;; 8 Queens
+
+(define (list-ref items n)
+  (if (= n 0)
+      (car items)
+      (list-ref (cdr items) (- n 1))))
+
+(define (queens board-size)
+  (define empty-board '())
+  
+  (define (make-position row col)
+    (cons row col))
+  (define (position-row position)
+    (car position))
+  (define (position-col position)
+    (cdr position))
+  
+  (define (adjoin-position row col positions)
+    (append positions (list (make-position row col))))
+  
+  (define (safe? col positions)
+    (define (same-row? p1 p2)
+      (= (position-row p1) (position-row p2)))
+    (define (same-diagonal? p1 p2)
+      (= (abs (- (position-row p1) (position-row p2)))
+         (abs (- (position-col p1) (position-col p2)))))
+    (let ((this-queen (list-ref positions (- col 1)))
+          (other-queens (filter (lambda (other-pos)
+                                  (not (= col (position-col other-pos))))
+                                positions)))
+      (define (this-checks? some-other-queens)
+        (if (null? some-other-queens)
+            #f
+            (or (same-row? this-queen (car some-other-queens))
+                (same-diagonal? this-queen (car some-other-queens))
+                (this-checks? (cdr some-other-queens)))))
+      (not (this-checks? other-queens))))
+    
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position
+                    new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+;; scheme@(guile-user)> (queens 1)
+;; $29 = (((1 . 1)))
+;; scheme@(guile-user)> (queens 2)
+;; $30 = ()
+;; scheme@(guile-user)> (queens 3)
+;; $31 = ()
+;; scheme@(guile-user)> (queens 4)
+;; $32 = (((2 . 1) (4 . 2) (1 . 3) (3 . 4)) ((3 . 1) (1 . 2) (4 . 3) (2 . 4)))
+;; scheme@(guile-user)> (length (queens 5))
+;; $34 = 10
+
