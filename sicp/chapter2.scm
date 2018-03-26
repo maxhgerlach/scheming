@@ -640,3 +640,77 @@
   (fold-left (lambda (x y) (cons y x )) '() sequence))
 
 ;; (reverse-fl (list 1 2 3))               ; (3 2 1)
+
+
+;; Nested mappings
+(define (enumerate-interval low high)
+  (if (> low high)
+      '()
+      (cons low (enumerate-interval (+ low 1) high))))
+
+
+(define (flatmap proc seq)
+  (accumulate append '() (map proc seq)))
+
+;; (flatmap (lambda (i)
+;;            (map (lambda (j) (list i j))
+;;                 (enumerate-interval 1 (- i 1))))
+;;          (enumerate-interval 1 10))
+;; ((2 1) (3 1) (3 2) (4 1) (4 2) (4 3) (5 1) (5 2) (5 3) (5 4) (6 1) (6 2) (6 3) (6 4) (6 5) (7 1) (7 2) (7 3) (7 4) (7 5) (7 6) (8 1) (8 2) (8 3) (8 4) (8 5) (8 6) (8 7) (9 1) (9 2) (9 3) (9 4) (9 5) (9 6) (9 7) (9 8) (10 1) (10 2) (10 3) (10 4) (10 5) (10 6) (10 7) (10 8) (10 9))
+
+;; > (map (lambda (i) (list 0 i)) (list 1 2 3 4))
+;; $7 = ((0 1) (0 2) (0 3) (0 4))
+;; > (flatmap (lambda (i) (list 0 i)) (list 1 2 3 4))
+;; $8 = (0 1 0 2 0 3 0 4)
+
+(define (smallest-divisor n) (find-divisor n 2))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+(define (divides? a b) (= (remainder b a) 0))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+
+(define (make-pair-sum pair)
+  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum? (flatmap
+                           (lambda (i)
+                             (map (lambda (j) (list i j))
+                                  (enumerate-interval 1 (- i 1))))
+                           (enumerate-interval 1 n)))))
+
+(define (permutations s)
+  (if (null? s)
+      (list '())
+      (flatmap (lambda (x)
+                 (map (lambda (p) (cons x p))
+                      (permutations (remove x s))))
+               s)))
+
+(permutations (list 1 2 3))
+
+(define (remove item sequence)
+  (filter (lambda (x) (not (= x item)))
+          sequence))
+
+
+;; Exercise 2.40
+(define (unique-pairs n)
+  (if (< n 2)
+      '()
+      (flatmap
+       (lambda (i)
+         (map (lambda (j) (list i j))
+              (enumerate-interval 1 (- i 1))))
+       (enumerate-interval 2 n))))
+
+;; (unique-pairs 5)
+;; $11 = ((2 1) (3 1) (3 2) (4 1) (4 2) (4 3) (5 1) (5 2) (5 3) (5 4))
