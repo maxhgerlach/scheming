@@ -718,3 +718,13 @@
        (filter prime-sum? (unique-pairs n))))
 
 
+;; Exercise 2.41
+(define (unique-triples n)
+  (flatmap
+   (lambda (m)
+     (map (lambda (pair) (cons m pair))
+          (unique-pairs (- m 1))))
+   (enumerate-interval 3 n)))
+
+;; (unique-triples 5)
+;; => ((3 2 1) (4 2 1) (4 3 1) (4 3 2) (5 2 1) (5 3 1) (5 3 2) (5 4 1) (5 4 2) (5 4 3))
