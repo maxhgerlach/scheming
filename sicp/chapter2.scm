@@ -687,6 +687,11 @@
                                   (enumerate-interval 1 (- i 1))))
                            (enumerate-interval 1 n)))))
 
+
+(define (remove item sequence)
+  (filter (lambda (x) (not (= x item)))
+          sequence))
+
 (define (permutations s)
   (if (null? s)
       (list '())
@@ -694,13 +699,6 @@
                  (map (lambda (p) (cons x p))
                       (permutations (remove x s))))
                s)))
-
-(permutations (list 1 2 3))
-
-(define (remove item sequence)
-  (filter (lambda (x) (not (= x item)))
-          sequence))
-
 
 ;; Exercise 2.40
 (define (unique-pairs n)
@@ -714,3 +712,9 @@
 
 ;; (unique-pairs 5)
 ;; $11 = ((2 1) (3 1) (3 2) (4 1) (4 2) (4 3) (5 1) (5 2) (5 3) (5 4))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum? (unique-pairs n))))
+
+
