@@ -740,14 +740,16 @@
 
 (define (queens board-size)
   (define empty-board '())
-  
+
+  ;; storing the col is actually redundant
   (define (make-position row col)
     (cons row col))
   (define (position-row position)
     (car position))
   (define (position-col position)
     (cdr position))
-  
+
+  ;; alternatively we could just have the latest added col in the car of the list positions
   (define (adjoin-position row col positions)
     (append positions (list (make-position row col))))
   
@@ -793,4 +795,20 @@
 ;; $32 = (((2 . 1) (4 . 2) (1 . 3) (3 . 4)) ((3 . 1) (1 . 2) (4 . 3) (2 . 4)))
 ;; scheme@(guile-user)> (length (queens 5))
 ;; $34 = 10
+;; scheme@(guile-user)> (length (queens 8))
+;; $37 = 92
 
+
+
+;; Exercise 2.43
+
+;; (flatmap
+;;  (lambda (new-row)
+;;    (map (lambda (rest-of-queens)
+;;           (adjoin-position new-row k rest-of-queens))
+;;         (queen-cols (- k 1))))
+;;  (enumerate-interval 1 board-size))
+
+;; This would call the expensive queens-cols function board-size times
+;; each time a column is added. Since this is tree recursive, there
+;; will be exponential growth in run time.
