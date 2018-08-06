@@ -812,3 +812,51 @@
 ;; This would call the expensive queens-cols function board-size times
 ;; each time a column is added. Since this is tree recursive, there
 ;; will be exponential growth in run time.
+
+
+;;;;;;;;;;;;;;;;;;;
+;; Symbolic data ;;
+;;;;;;;;;;;;;;;;;;;
+(define true #t)
+(define false #f)
+
+(define (memq item x)
+  (cond ((null? x) false)
+        ((eq? item (car x)) x)
+        (else (memq item (cdr x)))))
+
+
+;; Exercise 2.53
+
+(list 'a 'b c)        ; (a b c)
+(list (list 'george)) ; ((george))
+(cdr '((x1 x2) (y1 y2)))                ; ((y1 y2))
+(cadr '((x1 x2) (y1 y2)))               ; (y1 y2)
+(pair? (car '(a short list)))           ; #f
+(memq 'red '((red shoes) (blue socks))) ; #f
+(memq 'red '(red shoes blue socks))     ; (red shoes blue socks)
+
+
+;; Exercise 2.54
+
+(define (my-equal? l1 l2)
+  (cond ((and (not (pair? l1))
+              (not (pair? l2)))
+         (eq? l1 l2))
+        ((and (pair? l1) (pair? l2))
+         (and (my-equal? (car l1) (car l2))
+              (my-equal? (cdr l1) (cdr l2))))
+        (else false)))
+
+(my-equal? '(this is a list) '(this is a list)) ; #t
+(my-equal? '(this is a list) '(this is a )) ; #f
+(my-equal? '(this is a list) '(this (is a) list)) ; #f
+
+
+;; Exercise 2.55
+
+(car ''abracadabra)                     ;quote
+(car (quote 'abracadabra))              ;quote
+(car (quote (quote abracadabra)))       ;quote
+
+
