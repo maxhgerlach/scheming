@@ -862,6 +862,9 @@
 
 
 ;; 2.3.2 Example: Symbolic Differentiation
+;;
+;; Exercise 2.56
+
 
 (define (deriv exp var)
   (cond ((number? exp) 0)
@@ -875,6 +878,10 @@
                         (deriv (multiplicand exp) var))
           (make-product (deriv (multiplier exp) var)
                         (multiplicand exp))))
+        ((exponentiation? exp)          ;does not handle x**x correctly
+         (make-product (make-product (exponent exp)
+                                     (make-exponentiation (base exp) (make-sum (exponent exp) (- 1))))
+                       (deriv (base exp) var)))
         (else
          (error "unknown expression type: DERIV" exp))))
 
@@ -913,6 +920,22 @@
 
 (define (multiplicand p) (caddr p))
 
+(define (exponentiation? x)
+  (and (pair? x) (eq? (car x) '**)))
+
+(define (base e) (cadr e))
+
+(define (exponent e) (caddr e))
+
+(define (make-exponentiation b p)
+  (cond ((=number? p 0) 1)
+        ((=number? p 1) b)
+        ((and (number? b) (number? p))
+         (expt b p))
+        (else (list '** b p))))
+        
+
+
 
 ;; examples
 
@@ -920,3 +943,10 @@
 (deriv '(* x y) 'x)                     ; (+ (* x 0) (* y 1)) ; y
 (deriv '(* (* x y) (+ x 3)) 'x)         ; (+ (* x y) (* y (+ x 3)))
 
+;; example Ex. 2.56
+
+(deriv '(** x 4))
+(deriv '(+ (* 2 (* a x)) b) 'x)         ; (* 2 a)
+(deriv '(+ (+ (* 2 (* a x)) b) c) 'x)   ; (* 2 a)
+(deriv '(+ (+ (* a (** x 2)) b) c) 'x)  ; (* a (* 2 x))
+(deriv '(+ (+ (* a (** x 2)) (* b x)) c) 'x) ; (+ (* a (* 2 x)) b)
