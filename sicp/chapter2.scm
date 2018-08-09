@@ -955,3 +955,6 @@
 
 (deriv '(* x y (+ x 3)) 'x)             ; (+ (* x y) (* y (+ x 3)))
 (deriv '(* x y (+ x 3 4 5)) 'x)         ; (+ (* x y) (* y (+ x 3 4 5)))
+
+
+;; example Ex. 2.58 part a in separate file, skipping part b for now
