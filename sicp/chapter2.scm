@@ -863,7 +863,7 @@
 
 ;; 2.3.2 Example: Symbolic Differentiation
 ;;
-;; Exercise 2.56
+;; Exercise 2.56, 2.57
 
 
 (define (deriv exp var)
@@ -911,14 +911,14 @@
 
 (define (addend s) (cadr s))
 
-(define (augend s) (caddr s))
+(define (augend s) (accumulate make-sum 0 (cddr s)))
 
 (define (product? x)
   (and (pair? x) (eq? (car x) '*)))
 
 (define (multiplier p) (cadr p))
 
-(define (multiplicand p) (caddr p))
+(define (multiplicand p) (accumulate make-product 1 (cddr p)))
 
 (define (exponentiation? x)
   (and (pair? x) (eq? (car x) '**)))
@@ -945,8 +945,13 @@
 
 ;; example Ex. 2.56
 
-(deriv '(** x 4))
+(deriv '(** x 4) 'x)                         ; (* 4 (** x 3))
 (deriv '(+ (* 2 (* a x)) b) 'x)         ; (* 2 a)
 (deriv '(+ (+ (* 2 (* a x)) b) c) 'x)   ; (* 2 a)
 (deriv '(+ (+ (* a (** x 2)) b) c) 'x)  ; (* a (* 2 x))
 (deriv '(+ (+ (* a (** x 2)) (* b x)) c) 'x) ; (+ (* a (* 2 x)) b)
+
+;; example Ex. 2.57
+
+(deriv '(* x y (+ x 3)) 'x)             ; (+ (* x y) (* y (+ x 3)))
+(deriv '(* x y (+ x 3 4 5)) 'x)         ; (+ (* x y) (* y (+ x 3 4 5)))
