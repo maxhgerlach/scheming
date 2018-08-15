@@ -1092,3 +1092,23 @@
 (ord-adjoin-set 8 '(10 12))             ; (8 10 12)
 (ord-adjoin-set 8 '())                  ; (8)
 (ord-adjoin-set 8 '(1 2 5))             ; (1 2 5 8)
+
+
+;; Exercise 2.62
+
+(define (ord-union-set set1 set2)
+  (cond ((null? set1) set2)
+        ((null? set2) set1)
+        (else
+         (let ((x1 (car set1)) (x2 (car set2)))
+           (cond ((= x1 x2)
+                  (cons x1 (ord-union-set (cdr set1) (cdr set2))))
+                 ((< x1 x2)
+                  (cons x1 (ord-union-set (cdr set1) set2)))
+                 ((> x1 x2)
+                  (cons x2 (ord-union-set set1 (cdr set2)))))))))
+
+(ord-union-set '(1 2 3 4 5 8) '(2 3 4 9 10)) ; => (1 2 3 4 5 8 9 10)
+(ord-union-set '(1 2 3 4 5 8) '())           ; => (8 5 4 3 2 1)
+(ord-union-set '() '(1 2 3 4 5 8))           ; => (1 2 3 4 5 8)
+(ord-union-set '() '())                      ; => ()
