@@ -1039,9 +1039,56 @@
   (cond ((or (null? set1) (null? set2)) '())
         ((dup-element-of-set? (car set1) set2)
          (cons (car set1) (dup-intersection-set (cdr set1) set2)))
-        (else (dup-intersection-set (cdr set1) set2))))
+        (else (dup-intersection-set (cdr set1) set2)))) ; O(n^2)
 
 (dup-intersection-set '(1 2 3 4 5 8) '(9 10 3 4 2)) ; (2 3 4)
 (dup-intersection-set '(1 2 3 2 2 4 3 5 8) '(2 3 2 1 3 2 2)) ; (1 2 3 2 2 3)
 
 
+
+;; Sets as ordered lists
+
+(define (ord-element-of-set? x set)
+  (cond ((null? set) #f)
+        ((= x (car set)) #t)
+        ((< x (car set)) #f)
+        (else (ord-element-of-set? x (cdr set))))) ; O(n), but n/2
+
+(ord-element-of-set? 6 '(1 3 6 10))
+(ord-element-of-set? 10 '(1 3 6 10))
+(ord-element-of-set? 4 '(1 3 6 10))
+(ord-element-of-set? 12 '(1 3 6 10))
+
+
+(define (ord-intersection-set set1 set2)
+  (if (or (null? set1) (null? set2))
+      '()
+      (let ((x1 (car set1)) (x2 (car set2)))
+        (cond ((= x1 x2)
+               (cons x1 (ord-intersection-set (cdr set1)
+                                              (cdr set2))))
+              ((< x1 x2)
+               (ord-intersection-set (cdr set1) set2))
+              ((< x2 x1)
+               (ord-intersection-set set1 (cdr set2))))))) ; O(n)
+
+
+(ord-intersection-set '(1 2 3 4 5 8) '(2 3 4 9 10)) ; (2 3 4)
+(ord-intersection-set '(1 2 3 4 5 8) '(1 2 3))      ; (1 2 3)
+
+
+;; Exercise 2.61
+
+(define (ord-adjoin-set x set)
+  (cond ((null? set) (cons x set))
+        ((< x (car set)) (cons x set))
+        ((= x (car set)) set)
+        ((> x (car set)) (cons (car set)
+                               (ord-adjoin-set x (cdr set)))))) ; O(n), but n/2
+
+(ord-adjoin-set 3 '(1 2 3))             ; (1 2 3)
+(ord-adjoin-set 0 '(1 2 3))             ; (0 1 2 3)
+(ord-adjoin-set 8 '(1 2 3 10))          ; (1 2 3 8 10)
+(ord-adjoin-set 8 '(10 12))             ; (8 10 12)
+(ord-adjoin-set 8 '())                  ; (8)
+(ord-adjoin-set 8 '(1 2 5))             ; (1 2 5 8)
