@@ -998,3 +998,50 @@
 (union-set '(1 2 3 4 5 8) '())           ; => (8 5 4 3 2 1)
 (union-set '() '(1 2 3 4 5 8))           ; => (1 2 3 4 5 8)
 (union-set '() '())                      ; => ()
+
+
+;; Exercise 2.60
+
+(define (dup-element-of-set? x set)
+  (cond ((null? set) #f)
+        ((equal? x (car set)) #t)
+        (else (dup-element-of-set? x (cdr set)))))
+
+(dup-element-of-set? 1 '(2 3 2 1 3 2 2))
+(dup-element-of-set? 3 '(2 3 2 1 3 2 2))
+
+;; dup-element-of-set? should have the same asymptotic efficiency O(n)
+;; as element-of-set?, however if it is unordered with many duplicates
+;; of elements, searching for other elements may take longer, e.g., 1
+;; in the set above.
+
+
+(define (dup-adjoin-set x set)
+  (cons x set))
+
+(dup-adjoin-set 3 '(2 3 2 1 3 2 2))
+
+;; dup-adjoin-set is O(1) now rather than O(n), of course memory usage is higher
+
+
+(define (dup-union-set set1 set2)
+  (cond ((null? set1) set2)
+        (else (dup-union-set
+               (cdr set1)
+               (dup-adjoin-set (car set1) set2)))))
+
+;; dup-union-set is O(n) rather than O(n^2) now
+
+(dup-union-set '(1 2 3 4 5 8) '(9 10 3 4 2)) ; => (8 5 4 3 2 1 9 10 3 4 2)
+
+
+(define (dup-intersection-set set1 set2)
+  (cond ((or (null? set1) (null? set2)) '())
+        ((dup-element-of-set? (car set1) set2)
+         (cons (car set1) (dup-intersection-set (cdr set1) set2)))
+        (else (dup-intersection-set (cdr set1) set2))))
+
+(dup-intersection-set '(1 2 3 4 5 8) '(9 10 3 4 2)) ; (2 3 4)
+(dup-intersection-set '(1 2 3 2 2 4 3 5 8) '(2 3 2 1 3 2 2)) ; (1 2 3 2 2 3)
+
+
