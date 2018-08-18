@@ -1398,16 +1398,15 @@
 
 (define (encode-symbol symbol tree)
   (define (build symbol tree bit-list)
+    (define (progress new-symbol selected-branch)
+      (let ((new-bit-list (append bit-list (list new-symbol))))
+        (if (leaf? selected-branch)
+            new-bit-list
+            (build symbol selected-branch new-bit-list))))
     (cond ((element-of-set? symbol (symbols (left-branch tree)))
-           (let ((new-bit-list (append bit-list '(0))))
-             (if (leaf? (left-branch tree))
-                 new-bit-list
-                 (build symbol (left-branch tree) new-bit-list))))
+           (progress 0 (left-branch tree)))
           ((element-of-set? symbol (symbols (right-branch tree)))
-           (let ((new-bit-list (append bit-list '(1))))
-             (if (leaf? (right-branch tree))
-                 new-bit-list
-                 (build symbol (right-branch tree) new-bit-list))))
+           (progress 1 (right-branch tree)))
           (else (error "Symbol not in tree" symbol))))
   (build symbol tree '()))
 
