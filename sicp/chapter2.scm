@@ -1353,6 +1353,8 @@
                     (make-leaf-set (cdr pairs))))))
 
 
+(make-leaf-set '((A 4) (B 2) (C 1) (D 1)))
+
 ;; Exercise 2.67
 
 (define sample-tree
@@ -1365,3 +1367,52 @@
 (define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
 
 (decode sample-message sample-tree)     ; (A D A B B C A)
+
+;; sample-tree
+;; ((leaf A 4)
+;;  ((leaf B 2)
+;;   ((leaf D 1)
+;;    (leaf C 1)
+;;    (D C) 2)
+;;   (B D C) 4)
+;;  (A B D C) 8)
+
+
+
+
+;; Exercise 2.68
+
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+              (encode (cdr message) tree))))
+
+;; symbols are ordered by their weights which are however not included
+;; in the set: cannot directly use ord-element-of-set?
+(define (element-of-set? x set)
+  (cond ((null? set) #f)
+        ((equal? x (car set)) #t)
+        (else (element-of-set? x (cdr set)))))
+
+
+(define (encode-symbol symbol tree)
+  (define (build symbol tree bit-list)
+    (cond ((element-of-set? symbol (symbols (left-branch tree)))
+           (let ((new-bit-list (append bit-list '(0))))
+             (if (leaf? (left-branch tree))
+                 new-bit-list
+                 (build symbol (left-branch tree) new-bit-list))))
+          ((element-of-set? symbol (symbols (right-branch tree)))
+           (let ((new-bit-list (append bit-list '(1))))
+             (if (leaf? (right-branch tree))
+                 new-bit-list
+                 (build symbol (right-branch tree) new-bit-list))))
+          (else (error "Symbol not in tree" symbol))))
+  (build symbol tree '()))
+
+
+;(encode '(A D A B B C A) sample-tree)   ;(0 1 1 0 0 1 0 1 0 1 1 1 0)
+
+;(encode '(A D A B E B C A) sample-tree) ;error
+
