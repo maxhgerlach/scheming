@@ -1479,3 +1479,8 @@
 ;; 8 = 3 bits per symbol.  So encoding the 36-symbol song would
 ;; require 3 * 36 = 108 bits.  We saved 24 bits.
 
+
+
+;; Exercise 2.71
+;;
+;; 1 bit for the most frequent, n-1 for the two least frequent symbols.
