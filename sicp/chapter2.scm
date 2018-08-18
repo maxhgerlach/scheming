@@ -1351,9 +1351,9 @@
         (adjoin-set (make-leaf (car pair)   ; symbol
                                (cadr pair)) ; frequency
                     (make-leaf-set (cdr pairs))))))
+; the result of make-leaf-set is ordered: lowest weights come first
 
-
-(make-leaf-set '((A 4) (B 2) (C 1) (D 1)))
+;(make-leaf-set '((A 4) (B 2) (C 1) (D 1)))  ; ((leaf D 1) (leaf C 1) (leaf B 2) (leaf A 4))
 
 ;; Exercise 2.67
 
@@ -1415,3 +1415,37 @@
 
 ;(encode '(A D A B E B C A) sample-tree) ;error
 
+
+
+
+;; Exercise 2.69
+
+(define (generate-huffman-tree pairs)
+  (define (successive-merge tree-set)
+    (let ((lowest (car tree-set))
+          (others (cdr tree-set)))
+      (if (null? others)
+          lowest
+          (let ((next-lowest (car others))
+                (remaining (cdr others)))
+            (successive-merge (adjoin-set (make-code-tree lowest next-lowest)
+                                          remaining))))))
+  (successive-merge (make-leaf-set pairs)))
+
+;; sample-tree
+;; ((leaf A 4)
+;;  ((leaf B 2)
+;;   ((leaf D 1)
+;;    (leaf C 1)
+;;    (D C) 2)
+;;   (B D C) 4)
+;;  (A B D C) 8)
+;;  
+;; (generate-huffman-tree '((A 4) (B 2) (C 1) (D 1)))
+;; ((leaf A 4)
+;;  ((leaf B 2)
+;;   ((leaf D 1)
+;;    (leaf C 1)
+;;    (D C) 2)
+;;   (B D C) 4)
+;;  (A B D C) 8)
