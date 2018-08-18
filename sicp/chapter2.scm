@@ -1449,3 +1449,33 @@
 ;;    (D C) 2)
 ;;   (B D C) 4)
 ;;  (A B D C) 8)
+
+
+;; Ex. 2.70
+
+(define song-alphabet
+  '((A 2) (GET 2) (SHA 3) (WAH 1)
+    (BOOM 1) (JOB 2) (NA 16) (YIP 9)))
+
+(define song-tree
+  (generate-huffman-tree song-alphabet))
+(define song
+  '(GET A JOB
+    SHA NA NA NA NA NA NA NA NA
+    GET A JOB
+    SHA NA NA NA NA NA NA NA NA
+    WAH YIP YIP YIP YIP YIP YIP YIP YIP YIP
+    SHA BOOM))
+
+(define song-bits
+  (encode song song-tree))
+
+(length song-bits)                      ; 84 bits in the song-tree Huffman encoding
+
+(length song)                           ; 36 symbols in the song
+(length song-alphabet)                  ; 8 symbols in the alphabet
+
+;; A fixed-length code for an eight-symbol alphabet would allocate ld
+;; 8 = 3 bits per symbol.  So encoding the 36-symbol song would
+;; require 3 * 36 = 108 bits.  We saved 24 bits.
+
