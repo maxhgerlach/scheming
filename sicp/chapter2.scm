@@ -1484,3 +1484,10 @@
 ;; Exercise 2.71
 ;;
 ;; 1 bit for the most frequent, n-1 for the two least frequent symbols.
+
+
+;; Exercise 2.72
+;;
+;;
+;; most frequent symbol: O(1)
+;; least frequent symbol: O(n^2)
