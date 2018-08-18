@@ -1106,7 +1106,7 @@
                  ((< x1 x2)
                   (cons x1 (ord-union-set (cdr set1) set2)))
                  ((> x1 x2)
-                  (cons x2 (ord-union-set set1 (cdr set2)))))))))
+                  (cons x2 (ord-union-set set1 (cdr set2))))))))) ; O(n)
 
 (ord-union-set '(1 2 3 4 5 8) '(2 3 4 9 10)) ; => (1 2 3 4 5 8 9 10)
 (ord-union-set '(1 2 3 4 5 8) '())           ; => (8 5 4 3 2 1)
@@ -1204,3 +1204,79 @@
 ;; tree->list-1 is O(n log n) since append has linear complexity
 ;;
 ;; tree->list-2 is O(n) since cons has linear complexity
+
+
+;; Ex. 2.64
+
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+(define (partial-tree elts n)
+  (if (= n 0)
+      (cons '() elts)
+      (let ((left-size (quotient (- n 1) 2)))
+        (let ((left-result
+               (partial-tree elts left-size)))
+          (let ((left-tree (car left-result))
+                (non-left-elts (cdr left-result))
+                (right-size (- n (+ left-size 1))))
+            (let ((this-entry (car non-left-elts))
+                  (right-result
+                   (partial-tree
+                    (cdr non-left-elts)
+                    right-size)))
+              (let ((right-tree (car right-result))
+                    (remaining-elts (cdr right-result)))
+                   (cons (make-tree this-entry
+                                    left-tree
+                                    right-tree)
+                         remaining-elts))))))))
+
+(list->tree '(1 3 5 7 9 11)) ;; => (5 (1 () (3 () ())) (9 (7 () ()) (11 () ())))
+;;                              
+;;            5                 
+;;           / \                
+;;          /   \               
+;;         1     9         
+;;          \   / \                      
+;;          3  7   11
+;;
+;;
+;; (partial-tree elements (length elements)) builds a tree from all elements
+;;
+;; If elements are not ordered, (partial-tree elements n) may not
+;; produce a balanced tree. ...
+;;
+;;
+;; O(n)
+
+
+;; Ex. 2.65 -- making use of previous routines to remain O(n)
+
+(define (tree-union-set tree1 tree2)
+  (let ((list1 (tree->list-2 tree1))
+        (list2 (tree->list-2 tree2)))
+    (let ((list-union (ord-union-set list1 list2)))
+      (list->tree list-union))))
+
+(list->tree '(1 2 3 4 5 8))             ; (3 (1 () (2 () ())) (5 (4 () ()) (8 () ())))
+(list->tree '(2 3 4 9 10))              ; (4 (2 () (3 () ())) (9 () (10 () ())))
+(tree-union-set '(3 (1 () (2 () ())) (5 (4 () ()) (8 () ())))
+                '(4 (2 () (3 () ())) (9 () (10 () ()))))
+                                        ; (4 (2 (1 () ()) (3 () ())) (8 (5 () ()) (9 () (10 () ()))))
+(tree->list-2 '(4 (2 (1 () ()) (3 () ())) (8 (5 () ()) (9 () (10 () ()))))) ; (1 2 3 4 5 8 9 10)
+
+
+
+(define (tree-intersection-set tree1 tree2)
+  (let ((list1 (tree->list-2 tree1))
+        (list2 (tree->list-2 tree2)))
+    (let ((list-intersection (ord-intersection-set list1 list2)))
+      (list->tree list-intersection))))
+
+(list->tree '(1 2 3 4 5 8))             ; (3 (1 () (2 () ())) (5 (4 () ()) (8 () ())))
+(list->tree '(2 3 4 9 10))              ; (4 (2 () (3 () ())) (9 () (10 () ())))
+(tree-intersection-set '(3 (1 () (2 () ())) (5 (4 () ()) (8 () ())))
+                       '(4 (2 () (3 () ())) (9 () (10 () ())))) ; (3 (2 () ()) (4 () ()))
+(tree->list-2 '(3 (2 () ()) (4 () ())))                         ; (2 3 4)
+
+
