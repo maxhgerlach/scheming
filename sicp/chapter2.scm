@@ -1787,6 +1787,10 @@
 (define (make-rational n d)
   ((get 'make 'rational) n d))
 
+(define (real-part z) (apply-generic 'real-part z))
+(define (imag-part z) (apply-generic 'imag-part z))
+(define (magnitude z) (apply-generic 'magnitude z))
+(define (angle z) (apply-generic 'angle z))
 
 (define (install-complex-package)
   ;; imported procedures from rectangular and polar packages
@@ -1821,6 +1825,10 @@
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
        (lambda (r a) (tag (make-from-mag-ang r a))))
+  (put 'real-part '(complex) real-part)
+  (put 'imag-part '(complex) imag-part)
+  (put 'magnitude '(complex) magnitude)
+  (put 'angle '(complex) angle)
   'done)
 
 (define (make-complex-from-real-imag x y)
@@ -1830,4 +1838,6 @@
 
 
 
-;; 
+;; Exercise 2.77
+
+
