@@ -42,3 +42,33 @@
 
 
 ;; Ex. 3.3
+(define (make-account balance stored-password)
+  (define (checked password fn)
+    (if (eq? password stored-password)
+        (lambda (amount) (fn amount))
+        (lambda (_) "Incorrect password")))
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch password m)
+    (cond ((eq? m 'withdraw) (checked password withdraw))
+          ((eq? m 'deposit) (checked password deposit))
+          (else (error "Unknown request: MAKE-ACCOUNT"
+                       m))))
+  dispatch)
+
+;; scheme@(guile-user)> (define A (make-account 100 'secret-password))
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 10)
+;; $21 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'secret-password 'withdraw) 10)
+;; $22 = 90
+;; scheme@(guile-user)> ((A 'wrong-password 'deposit) 20)
+;; $23 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'secret-password 'deposit) 20)
+;; $24 = 110
+
