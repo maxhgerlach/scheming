@@ -39,3 +39,6 @@
 ;; $15 = 10.04987562112089
 ;; scheme@(guile-user)> (sqrt-mon 'how-many-calls?)
 ;; $16 = 3
+
+
+;; Ex. 3.3
