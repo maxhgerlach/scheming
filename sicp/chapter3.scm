@@ -41,12 +41,8 @@
 ;; $16 = 3
 
 
-;; Ex. 3.3
+;; Ex. 3.3, 3.4
 (define (make-account balance stored-password)
-  (define (checked password fn)
-    (if (eq? password stored-password)
-        (lambda (amount) (fn amount))
-        (lambda (_) "Incorrect password")))
   (define (withdraw amount)
     (if (>= balance amount)
         (begin (set! balance (- balance amount))
@@ -55,12 +51,24 @@
   (define (deposit amount)
     (set! balance (+ balance amount))
     balance)
-  (define (dispatch password m)
-    (cond ((eq? m 'withdraw) (checked password withdraw))
-          ((eq? m 'deposit) (checked password deposit))
-          (else (error "Unknown request: MAKE-ACCOUNT"
-                       m))))
-  dispatch)
+  (let ((wrong-password-given 0))
+    (define (call-the-cops) "Too many wrong passwords!")
+    (define (checked password fn)
+      (if (eq? password stored-password)
+          (begin
+            (set! wrong-password-given 0)
+            (lambda (amount) (fn amount)))
+          (begin
+            (set! wrong-password-given (+ 1 wrong-password-given ))
+            (if (> wrong-password-given 7)
+                (lambda (_) (call-the-cops))
+                (lambda (_) "Incorrect password")))))
+    (define (dispatch password m)
+      (cond ((eq? m 'withdraw) (checked password withdraw))
+            ((eq? m 'deposit) (checked password deposit))
+            (else (error "Unknown request: MAKE-ACCOUNT"
+                         m))))
+    dispatch))
 
 ;; scheme@(guile-user)> (define A (make-account 100 'secret-password))
 ;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 10)
@@ -72,3 +80,27 @@
 ;; scheme@(guile-user)> ((A 'secret-password 'deposit) 20)
 ;; $24 = 110
 
+
+;; scheme@(guile-user)> (define A (make-account 100 'secret-password))
+;; scheme@(guile-user)> ((A 'secret-password 'withdraw) 1)
+;; $25 = 99
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $26 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $27 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $28 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $29 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $30 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $31 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $32 = "Incorrect password"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $33 = "Too many wrong passwords!"
+;; scheme@(guile-user)> ((A 'wrong-password 'withdraw) 99)
+;; $34 = "Too many wrong passwords!"
+;; scheme@(guile-user)> ((A 'secret-password 'withdraw) 99)
+;; $35 = 0
