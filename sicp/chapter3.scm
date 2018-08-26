@@ -104,3 +104,36 @@
 ;; $34 = "Too many wrong passwords!"
 ;; scheme@(guile-user)> ((A 'secret-password 'withdraw) 99)
 ;; $35 = 0
+
+
+
+;; Exercise 3.5
+
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+
+(define (monte-carlo trials experiment)
+  (define (iter trials-remaining trials-passed)
+    (cond ((= trials-remaining 0)
+           (/ trials-passed trials))
+          ((experiment)
+           (iter (- trials-remaining 1)
+                 (+ trials-passed 1)))
+          (else
+           (iter (- trials-remaining 1)
+                 trials-passed))))
+  (iter trials 0))
+
+(define (estimate-integral P x1 x2 y1 y2 trials)
+  (define (P-random-point)
+    (P (random-in-range x1 x2) (random-in-range y1 y2)))
+  (* (monte-carlo trials P-random-point)
+     (* (- x2 x1) (- y2 y1))))
+
+(define (in-unit-circle x y)
+  (<= (+ (* x x) (* y y)) 1))
+
+(define pi-estimate (estimate-integral in-unit-circle -1.0 1.0 -1.0 1.0 100000))
+
+pi-estimate                             ; => 3.14808
