@@ -181,3 +181,13 @@
         (error "Incorrect pasword for joint account")))
   dispatch)
 
+
+;; Ex. 3.8
+
+(define f
+  (let ((call-1 0)
+        (call-2 0))
+    (lambda (n)
+      (set! call-1 call-2)
+      (set! call-2 n)
+      call-1)))
