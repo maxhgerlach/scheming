@@ -136,4 +136,48 @@
 
 (define pi-estimate (estimate-integral in-unit-circle -1.0 1.0 -1.0 1.0 100000))
 
-pi-estimate                             ; => 3.14808
+;; pi-estimate                             ; => 3.14808
+
+
+;; Ex. 3.7
+
+(define (memq item x)
+  (cond ((null? x) #f)
+        ((eq? item (car x)) x)
+        (else (memq item (cdr x)))))
+
+(define (make-account balance initial-password)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((wrong-password-given 0))
+    (define (call-the-cops) "Too many wrong passwords!")
+    (define (checked password fn)
+      (if (eq? password initial-password)
+          (begin
+            (set! wrong-password-given 0)
+            (lambda (amount) (fn amount)))
+          (begin
+            (set! wrong-password-given (+ 1 wrong-password-given ))
+            (if (> wrong-password-given 7)
+                (lambda (_) (call-the-cops))
+                (lambda (_) "Incorrect password")))))
+    (define (dispatch password m)
+      (cond ((eq? m 'withdraw) (checked password withdraw))
+            ((eq? m 'deposit) (checked password deposit))
+            (else (error "Unknown request: MAKE-ACCOUNT"
+                         m))))
+    dispatch))
+
+(define (make-joint acc initial-password new-password)
+  (define (dispatch password m)
+    (if (eq? password new-password)
+        (acc initial-password m)
+        (error "Incorrect pasword for joint account")))
+  dispatch)
+
