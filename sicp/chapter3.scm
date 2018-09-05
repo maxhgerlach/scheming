@@ -191,3 +191,36 @@
       (set! call-1 call-2)
       (set! call-2 n)
       call-1)))
+
+
+;;
+;; Chapter 3.3 : Modeling with Mutable Data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Ex. 3.12
+
+(define (my-append x y)
+  (if (null? x)
+      y
+      (cons (car x) (append (cdr x) y))))
+
+(define (my-append! x y)
+  (set-cdr! (last-pair x) y)
+  x)
+
+(define (my-last-pair x)
+  (if (null? (cdr x)) x (last-pair (cdr x))))
+
+(define x (list 'a 'b))
+(define y (list 'c 'd))
+(define z (my-append x y))
+
+;; z                                       ; (a b c d)
+
+;; (cdr x)                                 ; (b)
+
+(define w (my-append! x y))
+
+;; w                                       ; (a b c d)
+
+;; (cdr x)                                 ; (b c d)
