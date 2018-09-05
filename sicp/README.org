@@ -8,8 +8,10 @@
 ** Chapter 1
    [[file:chapter1.scm][chapter1.scm]]
 
-
 ** Chapter 2
    ~nil~ is not defined in modern Scheme, so just use '() instead.
 
    [[chapter2.scm]]
+
+** Chapter 3
+   [[file:chapter3.scm][chapter3.scm]]
