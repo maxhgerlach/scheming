@@ -202,14 +202,14 @@
 (define (my-append x y)
   (if (null? x)
       y
-      (cons (car x) (append (cdr x) y))))
+      (cons (car x) (my-append (cdr x) y))))
 
 (define (my-append! x y)
-  (set-cdr! (last-pair x) y)
+  (set-cdr! (my-last-pair x) y)
   x)
 
 (define (my-last-pair x)
-  (if (null? (cdr x)) x (last-pair (cdr x))))
+  (if (null? (cdr x)) x (my-last-pair (cdr x))))
 
 (define x (list 'a 'b))
 (define y (list 'c 'd))
@@ -224,3 +224,32 @@
 ;; w                                       ; (a b c d)
 
 ;; (cdr x)                                 ; (b c d)
+
+
+
+;; Ex. 3.13
+
+(define (make-cycle x)
+  (set-cdr! (my-last-pair x) x)
+  x)
+
+(define z (make-cycle (list 'a 'b 'c)))
+
+;; (my-last-pair z) ;; does not halt
+;; (last-pair z)   ;Error: Circular structure in position 1: (a b c . #-2#)
+
+n
+;; Ex. 3.14
+
+(define (mystery x)
+  (define (loop x y)
+    (if (null? x)
+        y
+        (let ((temp (cdr x)))
+          (set-cdr! x y)
+          (loop temp x))))
+  (loop x '()))
+
+(define v (list 'a 'b 'c 'd))
+
+(mystery v)                             ; (d c b a)
