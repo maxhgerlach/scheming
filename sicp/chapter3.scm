@@ -253,3 +253,21 @@ n
 (define v (list 'a 'b 'c 'd))
 
 (mystery v)                             ; (d c b a)
+
+
+;; Exercise 3.16
+
+(define (broken-count-pairs x)
+  (if (not (pair? x))
+      0
+      (+ (broken-count-pairs (car x))
+         (broken-count-pairs (cdr x))
+         1)))
+
+(broken-count-pairs (list 1 2 3))       ; 3
+
+(define x (cons 3 '()))
+(broken-count-pairs (cons x (cons 2 x))) ; 4
+
+(define y (cons x x))
+(broken-count-pairs (cons y y))         ; 7
