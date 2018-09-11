@@ -275,8 +275,6 @@ n
 
 ;; Exercise 3.17
 
-
-
 (define (count-pairs x)
   (let ((seen '()))
     (define (count x)
@@ -296,3 +294,24 @@ n
 (count-pairs (cons x (cons 2 x)))       ; 3
 (define y (cons x x))
 (count-pairs (cons y y))                ; 3
+
+
+;; Exercise 3.18
+;; check "whether a program that tried to find the end of the list by
+;; taking successive cdrs would go into an infinite loop."
+
+(define (contains-cycle lst)
+  (let ((seen '()))
+    (define (check x)
+      (cond ((not (pair? x)) #f)
+            ((memq x seen) #t)
+            (else
+             (set! seen (cons x seen))
+             (check (cdr x)))))
+    (check lst)))
+(contains-cycle (list 1 2 3))           ; #f
+
+(define problem-list (list 1 2 3))
+(set-cdr! (cddr problem-list) problem-list)
+(contains-cycle problem-list)           ; #t
+
