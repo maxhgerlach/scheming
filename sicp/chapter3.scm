@@ -271,3 +271,28 @@ n
 
 (define y (cons x x))
 (broken-count-pairs (cons y y))         ; 7
+
+
+;; Exercise 3.17
+
+
+
+(define (count-pairs x)
+  (let ((seen '()))
+    (define (count x)
+      (cond ((not (pair? x))
+             0)
+            ((memq x seen)
+             0)
+            (else (begin
+                    (set! seen (cons x seen))
+                    (+ (count (car x))
+                       (count (cdr x))
+                       1)))))
+    (count x)))
+
+(count-pairs (list 1 2 3))              ; 3
+(define x (cons 3 '()))
+(count-pairs (cons x (cons 2 x)))       ; 3
+(define y (cons x x))
+(count-pairs (cons y y))                ; 3
