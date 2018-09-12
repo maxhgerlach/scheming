@@ -315,3 +315,26 @@ n
 (set-cdr! (cddr problem-list) problem-list)
 (contains-cycle problem-list)           ; #t
 
+
+;; Exercise 3.19
+;; Floyd's algorithm (tortoise and hare)
+
+(define (contains-cycle-efficient lst)
+  (define (iter slow fast)
+    (cond ((eq? slow fast) #t)
+          ((null? fast) #f)
+          ((null? (cdr fast)) #f)
+          (else (iter (cdr slow) (cddr fast)))))
+  (if (or (null? lst) (null? (cdr lst)) (null? (cddr lst)))
+      #f
+      (iter (cdr lst) (cddr lst))))
+
+(contains-cycle-efficient (list 1 2 3)) ; #f
+
+(contains-cycle-efficient problem-list) ; #t
+
+(define problem-list-4 (list 1 2 3 4))
+(set-cdr! (cdddr problem-list-4) problem-list-4)
+(contains-cycle-efficient problem-list-4) ; #t
+
+(contains-cycle-efficient '())          ; #f
