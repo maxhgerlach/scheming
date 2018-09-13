@@ -354,7 +354,7 @@ n
 (define (empty-queue? queue)
   (null? (front-ptr queue)))
 
-(define (make-queue) (cons '() '()))
+(define (make-cons-queue) (cons '() '()))
 
 (define (front-queue queue)
   (if (empty-queue? queue)
@@ -390,3 +390,61 @@ n
            (iter (cdr lst)))))
   (iter (front-ptr queue))
   (newline))
+
+
+;; Exercise 3.22
+
+(define (make-queue)
+  (let ((front-ptr '())
+        (rear-ptr '()))
+    (define (empty?)
+      (null? front-ptr))
+    (define (front)
+      (if (empty?)
+          (error "FRONT called with an empty queue")
+          (car front-ptr)))
+    (define (insert! item)
+      (let ((new-pair (cons item '())))
+        (cond ((empty?)
+               (set! front-ptr new-pair)
+               (set! rear-ptr new-pair))
+              (else
+               (set-cdr! rear-ptr new-pair)
+               (set! rear-ptr new-pair)))))
+    (define (delete!)
+      (cond ((empty?)
+             (error "DELETE! called with an empty queue"))
+            (else (set! front-ptr (cdr front-ptr)))))
+    (define (print)
+      (define (iter lst)
+        (cond ((null? lst) '())
+              (else
+               (display (car lst))
+               (display " ")
+               (iter (cdr lst)))))
+      (iter front-ptr)
+      (newline))
+    (define (dispatch m)
+      (cond ((eq? m 'empty?) empty?)
+            ((eq? m 'insert!) insert!)
+            ((eq? m 'delete!) delete!)
+            ((eq? m 'print) print)))
+    dispatch))
+
+;; scheme@(guile-user)> (define q (make-queue))
+;; scheme@(guile-user)> q
+;; $6 = #<procedure dispatch (m)>
+;; scheme@(guile-user)> (q 'empty?)
+;; $7 = #<procedure empty? ()>
+;; scheme@(guile-user)> ((q 'empty?))
+;; $8 = #t
+;; scheme@(guile-user)> ((q 'insert!) 1)
+;; scheme@(guile-user)> ((q 'print))
+;; 1 
+;; scheme@(guile-user)> ((q 'insert!) 2)
+;; scheme@(guile-user)> ((q 'insert!) 3)
+;; scheme@(guile-user)> ((q 'delete!))
+;; scheme@(guile-user)> ((q 'insert!) 4)
+;; scheme@(guile-user)> ((q 'print))
+;; 2 3 4 
+
