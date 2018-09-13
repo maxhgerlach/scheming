@@ -446,5 +446,55 @@ n
 ;; scheme@(guile-user)> ((q 'delete!))
 ;; scheme@(guile-user)> ((q 'insert!) 4)
 ;; scheme@(guile-user)> ((q 'print))
-;; 2 3 4 
+;; 2 3 4
 
+
+;; Exercise 3.23
+
+(define (make-deque)
+  (let ((fwd-front-ptr '())
+        (fwd-rear-ptr '())
+        (bwd-rear-ptr '())
+        (bwd-front-ptr '()))
+    (define (empty?)
+      (null? fwd-front-ptr))
+    (define (front)
+      (if (empty?)
+          (error "FRONT called with an empty deque")
+          (car fwd-front-ptr)))
+    (define (rear)
+      (if (empty?)
+          (error "REAR called with an empty deque")
+          (car bwd-rear-ptr)))
+    (define (back-insert! item)
+      (let ((new-fwd-pair (cons item '()))
+            (new-bwd-pair (cons item bwd-rear-ptr)))
+         (cond ((empty?)
+               (set! fwd-front-ptr new-fwd-pair)
+               (set! fwd-rear-ptr new-fwd-pair)
+               (set! bwd-front-ptr new-bwd-pair)
+               (set! bwd-rear-ptr new-bwd-pair))
+              (else
+               (set-cdr! fwd-rear-ptr new-fwd-pair)
+               (set! fwd-rear-ptr new-fwd-pair)
+               (set! bwd-rear-ptr new-bwd-pair)))))
+    (define (front-insert! item)
+      (let ((new-bwd-pair (cons item '()))
+            (new-fwd-pair (cons item fwd-rear-ptr)))
+        (cond ((empty?)
+               (set! bwd-front-ptr new-bwd-pair)
+               (set! bwd-rear-ptr new-bwd-pair)
+               (set! fwd-front-ptr new-fwd-pair)
+               (set! fwd-rear-ptr new-fwd-pair))
+              (else
+               (set-cdr! bwd-front-ptr new-bwd-pair)
+               (set! bwd-front-ptr new-bwd-pair)
+               (set! fwd-front-ptr new-fwd-pair)))))
+    (define (front-delete!)
+      (cond ((empty?)
+             (error "DELETE! called with an empty deque"))
+            (else
+             (set! fwd-front-ptr (cdr fwd-front-ptr))
+             )))
+
+              
