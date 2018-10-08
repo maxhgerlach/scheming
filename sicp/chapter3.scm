@@ -619,3 +619,83 @@ n
 ((example2 'lookup-proc)  0.1 9.9)      ; 10.0
 ((example2 'lookup-proc)  0.05 1.0)     ; #f
 ((example2 'lookup-proc)  0.05 9.99999) ; 10.0
+
+
+;; Exercise 3.25
+
+(define (make-table-multi-keys)
+  (let ((local-table (list '*table*)))
+    (define (lookup key-list)
+      (define (sub-lookup key-list table)
+        (let ((subtable-or-record
+               (assoc (car key-list) (cdr table))))
+          (if subtable-or-record
+              (if (null? (cdr key-list))
+                  (cdr subtable-or-record) ; return record value
+                  (sub-lookup (cdr key-list) subtable-or-record))
+              #f)))
+      (sub-lookup key-list local-table))
+    (define (at-least-two-elements? lst)
+      (cond ((null? lst) #f)
+            ((null? (cdr lst)) #f)
+            (else #t)))
+    (define (insert! key-list value)
+      (define (sub-insert! key-list value table)
+        (if (at-least-two-elements? key-list)
+            ;; first key specifies subtable
+            (let ((subtable
+                   (assoc (car key-list) (cdr table)))
+                  (remaining-keys
+                   (cdr key-list)))
+              (if subtable
+                  ;; insert into subtable created before
+                  (sub-insert! remaining-keys value subtable)
+                  ;; create new subtable, then insert
+                  (begin
+                    (set! subtable (list (car key-list)))
+                    (set-cdr! table (cons subtable
+                                          (cdr table)))
+                    (sub-insert! remaining-keys value subtable))))
+            ;; first (and only remaining) key specifies record
+            (let ((record
+                   (assoc (car key-list) (cdr table))))
+              (if record
+                  ;; modify record that's already present
+                  (set-cdr! record value)
+                  ;; insert new record
+                  (set-cdr! table
+                            (cons (cons (car key-list)
+                                        value)
+                                  (cdr table))))))
+        'ok)
+      (sub-insert! key-list value local-table))
+    (define (dispatch m)
+      (cond ((eq? m 'lookup-proc) lookup)
+            ((eq? m 'insert-proc!) insert!)
+            (else (error "Unknown operation: TABLE" m))))
+    dispatch))
+
+;; scheme@(guile-user)> (define ex (make-table-multi-keys))
+;; scheme@(guile-user)> ((ex 'insert-proc!) '(math +) 43)
+;; $2 = ok
+;; scheme@(guile-user)> ((ex 'insert-proc!) '(math -) 45)
+;; $3 = ok
+;; scheme@(guile-user)> ((ex 'insert-proc!) '(math -) 45)
+;; $4 = ok
+;; scheme@(guile-user)> ((ex 'insert-proc!) '(math -) 455)
+;; $5 = ok
+;; scheme@(guile-user)> ((ex 'lookup-proc) '(math +))
+;; $6 = 43
+;; scheme@(guile-user)> ((ex 'lookup-proc) '(math -))
+;; $7 = 455
+;; scheme@(guile-user)> ((ex 'insert-proc!) '(stuff letters a) 999)
+;; $8 = ok
+;; scheme@(guile-user)> ((ex 'lookup-proc) '(math -))
+;; $9 = 455
+;; scheme@(guile-user)> ((ex 'lookup-proc) '(stuff -))
+;; $10 = #f
+;; scheme@(guile-user)> ((ex 'lookup-proc) '(stuff letters))
+;; $11 = ((a . 999))
+;; scheme@(guile-user)> ((ex 'lookup-proc) '(stuff letters a))
+;; $12 = 999
+
