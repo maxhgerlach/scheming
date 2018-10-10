@@ -772,9 +772,13 @@ n
                ((= s2 1) 1)
                (else "Invalid signal s2: " s2)))
         ((= s1 1)
-         (cond ((= s2 0) 0)
+         (cond ((= s2 1) 0)
                ((= s2 1) 1)
                (else "Invalid signal s2: " s2)))
         (else (error "Invalid signal s1: " s1))))
 
 
+;; Exercise 3.29
+
+(define (compound-or-gate o1 o2 output)
+  
