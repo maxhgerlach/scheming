@@ -781,4 +781,12 @@ n
 ;; Exercise 3.29
 
 (define (compound-or-gate o1 o2 output)
-  
+  (let ((n1 (make-wire))
+        (n2 (make-wire))
+        (a (make-wire)))
+    (inverter o1 n1)
+    (inverter o2 n2)
+    (and-gate n1 n2 a)
+    (inverter a output)))
+
+; delay time: inverter-delay + and-delay + inverter-delay
