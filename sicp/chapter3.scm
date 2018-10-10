@@ -790,3 +790,29 @@ n
     (inverter a output)))
 
 ; delay time: inverter-delay + and-delay + inverter-delay
+
+
+;; Exercise 3.30
+
+(define (ripple-carry-adder a_k b_k s_k c)
+  (cond ((not (= (length a_k) (length b_k) (length s_k)))
+         (error "mismatching wire numbers")))
+  (define (apply-full-adders my-a_k my-b_k c-in my-s_k final-c-out)
+    (cond ((null? my-a_k)
+           (set-signal! final-c-out (get-signal c-in))
+           'ok)
+          (else
+           (let ((c-out (make-wire)))
+             (full-adder (car my-a_k) (car my-b_k) c-in (car my-s_k) c-out)
+             (apply-full-adder (cdr my-a_k) (cdr my-b_k) c-out (cdr my-s_k) final-c-out)
+             ))))
+  (let (null-c-in (make-wire))
+    (set-signal! null-c-in 0)
+    (apply-full-adders a_k b_k null-c-in s_k c)))
+
+;; n-bit ripple-carry-adder delay (carry propagation)
+;;  = n * full-adder-carrydelay
+;;  = n * (2 * half-adder-carry-delay + or-delay)
+;;  = n * (2 * and-delay + or-delay)
+
+;; delay on s is larger (on half-adder level)
