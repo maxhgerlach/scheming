@@ -772,7 +772,7 @@ n
                ((= s2 1) 1)
                (else "Invalid signal s2: " s2)))
         ((= s1 1)
-         (cond ((= s2 1) 0)
+         (cond ((= s2 0) 1)
                ((= s2 1) 1)
                (else "Invalid signal s2: " s2)))
         (else (error "Invalid signal s1: " s1))))
