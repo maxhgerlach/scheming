@@ -238,7 +238,6 @@
 ;; (my-last-pair z) ;; does not halt
 ;; (last-pair z)   ;Error: Circular structure in position 1: (a b c . #-2#)
 
-n
 ;; Ex. 3.14
 
 (define (mystery x)
@@ -354,7 +353,7 @@ n
 (define (empty-queue? queue)
   (null? (front-ptr queue)))
 
-(define (make-cons-queue) (cons '() '()))
+(define (make-queue) (cons '() '()))
 
 (define (front-queue queue)
   (if (empty-queue? queue)
@@ -394,7 +393,7 @@ n
 
 ;; Exercise 3.22
 
-(define (make-queue)
+(define (ex-make-queue)
   (let ((front-ptr '())
         (rear-ptr '()))
     (define (empty?)
@@ -431,7 +430,7 @@ n
             ((eq? m 'print) print)))
     dispatch))
 
-;; scheme@(guile-user)> (define q (make-queue))
+;; scheme@(guile-user)> (define q (ex-make-queue))
 ;; scheme@(guile-user)> q
 ;; $6 = #<procedure dispatch (m)>
 ;; scheme@(guile-user)> (q 'empty?)
@@ -795,18 +794,18 @@ n
 ;; Exercise 3.30
 
 (define (ripple-carry-adder a_k b_k s_k c)
-  (cond ((not (= (length a_k) (length b_k) (length s_k)))
-         (error "mismatching wire numbers")))
-  (define (apply-full-adders my-a_k my-b_k c-in my-s_k final-c-out)
-    (cond ((null? my-a_k)
-           (set-signal! final-c-out (get-signal c-in))
-           'ok)
-          (else
-           (let ((c-out (make-wire)))
-             (full-adder (car my-a_k) (car my-b_k) c-in (car my-s_k) c-out)
-             (apply-full-adder (cdr my-a_k) (cdr my-b_k) c-out (cdr my-s_k) final-c-out)
-             ))))
-  (let (null-c-in (make-wire))
+  (if (not (= (length a_k) (length b_k) (length s_k)))
+      (error "mismatching wire numbers"))
+  (let ((null-c-in (make-wire)))
+    (define (apply-full-adders my-a_k my-b_k c-in my-s_k final-c-out)
+      (cond ((null? my-a_k)
+             (set-signal! final-c-out (get-signal c-in))
+             'ok)
+            (else
+             (let ((c-out (make-wire)))
+               (full-adder (car my-a_k) (car my-b_k) c-in (car my-s_k) c-out)
+               (apply-full-adders (cdr my-a_k) (cdr my-b_k) c-out (cdr my-s_k) final-c-out)
+               ))))
     (set-signal! null-c-in 0)
     (apply-full-adders a_k b_k null-c-in s_k c)))
 
@@ -816,3 +815,163 @@ n
 ;;  = n * (2 * and-delay + or-delay)
 
 ;; delay on s is larger (on half-adder level)
+
+
+;; Representing wires, 
+
+(define (make-wire)
+  (let ((signal-value 0) (action-procedures '()))
+    (define (set-my-signal! new-value)
+      (if (not (= signal-value new-value))
+          (begin (set! signal-value new-value)
+                 (call-each action-procedures))
+          'done))
+    (define (accept-action-procedure! proc)
+      (set! action-procedures
+        (cons proc action-procedures))
+      (proc))
+    (define (dispatch m)
+      (cond ((eq? m 'get-signal) signal-value)
+            ((eq? m 'set-signal!) set-my-signal!)
+            ((eq? m 'add-action!) accept-action-procedure!)
+            (else (error "Unknown operation: WIRE" m))))
+    dispatch))
+
+
+(define (call-each procedures)
+  (if (null? procedures)
+      'done
+      (begin ((car procedures))
+             (call-each (cdr procedures)))))
+
+
+(define (get-signal wire) (wire 'get-signal))
+(define (set-signal! wire new-value)
+  ((wire 'set-signal!) new-value))
+(define (add-action! wire action-procedure)
+  ((wire 'add-action!) action-procedure))
+
+
+(define (after-delay delay action)
+  (add-to-agenda! (+ delay (current-time the-agenda))
+                  action
+                  the-agenda))
+
+
+(define (propagate)
+  (if (empty-agenda? the-agenda)
+      'done
+      (let ((first-item (first-agenda-item the-agenda)))
+        (first-item)
+        (remove-first-agenda-item! the-agenda)
+        (propagate))))
+
+
+(define (make-time-segment time queue)
+  (cons time queue))
+(define (segment-time s) (car s))
+(define (segment-queue s) (cdr s))
+
+(define (make-agenda) (list 0))
+(define (current-time agenda) (car agenda))
+(define (set-current-time! agenda time)
+  (set-car! agenda time))
+(define (segments agenda) (cdr agenda))
+(define (set-segments! agenda segments)
+  (set-cdr! agenda segments))
+(define (first-segment agenda) (car (segments agenda)))
+(define (rest-segments agenda) (cdr (segments agenda)))
+
+(define (empty-agenda? agenda)
+  (null? (segments agenda)))
+
+
+(define (add-to-agenda! time action agenda)
+  (define (belongs-before? segments)
+    (or (null? segments)
+        (< time (segment-time (car segments)))))
+  (define (make-new-time-segment time action)
+    (let ((q (make-queue)))
+      (insert-queue! q action)
+      (make-time-segment time q)))
+  (define (add-to-segments! segments)
+    (if (= (segment-time (car segments)) time)
+        (insert-queue! (segment-queue (car segments))
+                       action)
+        (let ((rest (cdr segments)))
+          (if (belongs-before? rest)
+              (set-cdr!
+               segments
+               (cons (make-new-time-segment time action)
+                     (cdr segments)))
+              (add-to-segments! rest)))))
+  (let ((segments (segments agenda)))
+    (if (belongs-before? segments)
+        (set-segments!
+         agenda
+         (cons (make-new-time-segment time action)
+               segments))
+        (add-to-segments! segments))))
+
+
+(define (remove-first-agenda-item! agenda)
+  (let ((q (segment-queue (first-segment agenda))))
+    (delete-queue! q)
+    (if (empty-queue? q)
+        (set-segments! agenda (rest-segments agenda)))))
+
+
+(define (first-agenda-item agenda)
+  (if (empty-agenda? agenda)
+      (error "Agenda is empty: FIRST-AGENDA-ITEM")
+      (let ((first-seg (first-segment agenda)))
+        (set-current-time! agenda
+                           (segment-time first-seg))
+        (front-queue (segment-queue first-seg)))))
+
+
+;; A sample simulation
+
+(define (probe name wire)
+  (add-action! wire
+               (lambda ()
+                 (newline)
+                 (display name) (display " ")
+                 (display (current-time the-agenda))
+                 (display " New-value = ")
+                 (display (get-signal wire))
+                 (newline))))
+
+(define the-agenda (make-agenda))
+(define inverter-delay 2)
+(define and-gate-delay 3)
+(define or-gate-delay 5)
+
+(define input-1 (make-wire))
+(define input-2 (make-wire))
+(define sum (make-wire))
+(define carry (make-wire))
+
+;; scheme@(guile-user)> (probe 'sum sum)
+
+;; sum 0 New-value = 0
+;; scheme@(guile-user)> (probe 'carry carry)
+
+;; carry 0 New-value = 0
+;; scheme@(guile-user)> (half-adder input-1 input-2 sum carry)
+;; $2 = ok
+;; scheme@(guile-user)> (set-signal! input-1 1)
+;; $3 = done
+;; scheme@(guile-user)> (propagate)
+
+;; sum 8 New-value = 1
+;; $4 = done
+;; scheme@(guile-user)> (set-signal! input-2 1)
+;; $5 = done
+;; scheme@(guile-user)> (propagate)
+
+;; carry 11 New-value = 1
+
+;; sum 16 New-value = 0
+;; $6 = done
+;; scheme@(guile-user)> 
