@@ -1293,3 +1293,51 @@
 (set-value! proper-b 99 'user)
 ;; Probe: b = 99
 ;; Probe: a = 9.9498743710662
+
+
+
+;; Ex. 3.37
+
+(define (c+ x y)
+  (let ((z (make-connector)))
+    (adder x y z)
+    z))
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z))
+
+(define (cv x)
+  (let ((x-connector (make-connector)))
+    (constant x x-connector)
+    x-connector))
+
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (multiplier y z x)
+    z))
+
+
+(define (celsius-fahrenheit-converter x)
+  (c+ (c* (c/ (cv 9) (cv 5))
+          x)
+      (cv 32)))
+(define C (make-connector))
+(define F (celsius-fahrenheit-converter C))
+
+(probe "Celsius" C)
+(probe "Fahrenheit" F)
+
+(set-value! C 100 'user)
+;; Probe: Celsius = 100
+;; Probe: Fahrenheit = 212
+
+(forget-value! C 'user)
+;; Probe: Celsius = ?
+;; Probe: Fahrenheit = ?
+
+(forget-value! F 'user)
+(set-value! F 72.0 'user)
+;; Probe: Fahrenheit = 72.0
+;; Probe: Celsius = 22.22222222222222
