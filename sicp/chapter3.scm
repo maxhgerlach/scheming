@@ -1208,3 +1208,40 @@
 (set-value! avg 100 'user)
 ;; Probe: avg = 100
 ;; Probe: num1 = 180.0
+
+
+;; Ex. 3.34
+;;
+;; Louis Reasoner's squarer
+;;
+;; Setting a to get b works.  But setting b to get a does not work,
+;; because the following condition in multiplier is never met:
+;;
+;; ((and (has-value? product) (has-value? m1))
+;;  (set-value! m2
+;;              (/ (get-value product)
+;;                 (get-value m1))
+;;              me))
+
+
+(define (louis-squarer a b)
+  (multiplier a a b))
+
+(define louis-a (make-connector))
+(define louis-b (make-connector))
+
+(louis-squarer louis-a louis-b)
+
+(probe "a" louis-a)
+(probe "b" louis-b)
+
+(set-value! louis-a 9 'user)
+;; Probe: a = 9
+;; Probe: b = 81
+
+(forget-value! louis-a 'user)
+;; Probe: a = ?
+;; Probe: b = ?
+
+(set-value! louis-b 99 'user)
+;; Probe: b = 99
