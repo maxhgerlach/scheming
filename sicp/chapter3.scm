@@ -1173,3 +1173,38 @@
 (set-value! F 212 'user)
 ;; Probe: Fahrenheit temp = 212
 ;; Probe: Celsius temp = 100
+
+
+;; Exercise 3.33
+
+(define (averager a b c)
+  (let ((x (make-connector))
+        (y (make-connector)))
+    (adder a b x)
+    (constant 0.5 y)
+    (multiplier x y c)
+    'ok))
+
+(define num1 (make-connector))
+(define num2 (make-connector))
+(define avg (make-connector))
+
+(averager num1 num2 avg)
+
+(probe "num1" num1)
+(probe "num2" num2)
+(probe "avg" avg)
+
+(set-value! num1 14 'user)
+;; Probe: num1 = 14
+(set-value! num2 20 'user)
+;; Probe: num2 = 20
+;; Probe: avg = 17.0
+(forget-value! num1 'user)
+;; Probe: num1 = ?
+;; Probe: avg = ?
+(forget-value! num2 'some-other-user)
+;; 'ignored
+(set-value! avg 100 'user)
+;; Probe: avg = 100
+;; Probe: num1 = 180.0
