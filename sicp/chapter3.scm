@@ -1341,3 +1341,79 @@
 (set-value! F 72.0 'user)
 ;; Probe: Fahrenheit = 72.0
 ;; Probe: Celsius = 22.22222222222222
+
+
+
+;; Exercise 3.47 Semaphore
+(define false #f)
+
+(define true #t)
+
+(define (clear! cell) (set-car! cell false))
+
+(define (test-and-set! cell)            ; non-atomic
+  (if (car cell) true (begin (set-car! cell true) false)))
+
+(define (make-mutex)
+  (let ((cell (list false)))
+    (define (the-mutex m)
+      (cond ((eq? m 'acquire)
+             (if (test-and-set! cell)
+                 (the-mutex 'acquire))) ; retry
+            ((eq? m 'release) (clear! cell))))
+    the-mutex))
+
+
+;; (define (list-from-constructor n constructor)
+;;   (if (> n 0)
+;;       (cons (constructor) (list-from-constructor (- n 1) constructor))
+;;       '()))
+
+
+(define (make-semaphore_mutex n)
+  (let ((my-mutex (make-mutex))
+        (counter 0))
+    (define (acquire)
+      (my-mutex 'acquire)
+      (cond ((< counter n)
+             (set! counter (+ counter 1))
+             (my-mutex 'release))
+            (else
+             (my-mutex 'release)
+             (acquire))))   ; retry
+    (define (release)
+      (my-mutex 'acquire)
+      (if (> counter 0)
+          (set! counter (- counter 1)))
+      (my-mutex 'release))          
+    (define (the-semaphore m)
+      (cond ((eq? m 'acquire) (acquire))
+            ((eq? m 'release) (release))
+            (else (error "Unknown message sent to semaphore" m))))
+    the-semaphore))
+    
+  
+(define (make-semaphore_test-and-set n)
+  (let ((cell (list false))
+        (counter 0))
+    (define (acquire)
+      (if (test-and-set! cell)
+          (acquire)                     ; retry
+          (cond ((< counter n)
+                 (set! counter (+ counter 1))
+                 (clear! cell))
+                (else
+                 (clear! cell)
+                 (acquire)))))   ; retry
+    (define (release)
+      (if (test-and-set! cell)
+          (release)                     ; retry
+          (begin
+            (if (> counter 0)
+                (set! counter (- counter 1)))
+            (clear! cell))))
+    (define (the-semaphore m)
+      (cond ((eq? m 'acquire) (acquire))
+            ((eq? m 'release) (release))
+            (else (error "Unknown message sent to semaphore" m))))
+    the-semaphore))
