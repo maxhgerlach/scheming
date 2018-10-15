@@ -1419,7 +1419,7 @@
     the-semaphore))
 
 
-;; Ex. 3.48 | Deadlock
+;; Ex. 3.48 | Deadlock avoidance
 
 (define (make-serializer)
   (let ((mutex (make-mutex)))
@@ -1431,24 +1431,34 @@
           val))
       serialized-p)))
 
+(define last-id 0)
+
+(define (make-id)
+  (set! last-id (+ last-id 1))
+  last-id)
+
 
 (define (make-account-and-serializer balance)
-  (define (withdraw amount)
-    (if (>= balance amount)
-        (begin (set! balance (- balance amount))
-               balance)
-        "Insufficient funds"))
-  (define (deposit amount)
-    (set! balance (+ balance amount))
-    balance)
-  (let ((balance-serializer (make-serializer)))
-    (define (dispatch m)
-      (cond ((eq? m 'withdraw) withdraw)
-            ((eq? m 'deposit) deposit)
-            ((eq? m 'balance) balance)
-            ((eq? m 'serializer) balance-serializer)
-            (else (error "Unknown request: MAKE-ACCOUNT" m))))
-    dispatch))
+  (let ((account-id (make-id)))
+    (define (get-id) account-id)
+    (define (withdraw amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds"))
+    (define (deposit amount)
+      (set! balance (+ balance amount))
+      balance)
+    (let ((balance-serializer (make-serializer)))
+      (define (dispatch m)
+        (cond ((eq? m 'withdraw) withdraw)
+              ((eq? m 'deposit) deposit)
+              ((eq? m 'balance) balance)
+              ((eq? m 'account-id) account-id)
+              ((eq? m 'serializer) balance-serializer)
+              (else (error "Unknown request: MAKE-ACCOUNT" m))))
+      dispatch)))
+
 
 (define (exchange account1 account2)
   (let ((difference (- (account1 'balance)
@@ -1458,8 +1468,22 @@
 
 
 (define (serialized-exchange account1 account2)
-  (let ((serializer1 (account1 'serializer))
-        (serializer2 (account2 'serializer)))
-    ((serializer1 (serializer2 exchange))
-     account1
-     account2)))
+  (let ((id-1 (account1 'account-id))
+        (id-2 (account2 'account-id)))
+    (let ((first-account (cond ((< id-1 id-2)
+                                account1)
+                               ((> id-1 id-2)
+                                account2)
+                               (else
+                                (error "equal ids!"))))
+          (second-account (cond ((< id-1 id-2)
+                                account2)
+                               ((> id-1 id-2)
+                                account1)
+                               (else
+                                (error "equal ids!")))))
+      (let ((serializer1 (first-account 'serializer))
+            (serializer2 (second-account 'serializer)))
+        ((serializer1 (serializer2 exchange))
+         account1
+         account2)))))
