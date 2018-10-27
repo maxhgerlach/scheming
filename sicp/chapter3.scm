@@ -1625,3 +1625,38 @@
 
 ;; 6
 ;; 7
+
+
+
+;; Exercise 3.52
+
+(define sum 0)                          ; 0
+(define (accum x) (set! sum (+ x sum)) sum) ; 0
+(define seq
+  (stream-map accum
+              (stream-enumerate-interval 1 20))) ; 1
+;; seq is the stream of 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136... 
+(define y (stream-filter even? seq))             ; 6
+;; elements this looks at via stream-car: 1, 3, 6 (first even)
+;; y is the stream of 6, 10, 28, 36, 66, 78, 120, 136, ...
+
+(define z
+  (stream-filter (lambda (x) (= (remainder x 5) 0))
+                 seq))                  ; 10
+;; elements this looks at via stream-car: 1, 3, 6, 10 (first with remainder 0)
+(stream-ref y 7)                        ; => 136, sum=136
+
+(display-stream z)
+;; 10
+;; 15
+;; 45
+;; 55
+;; 105
+;; 120
+;; 190
+;; 210,     sum = 210
+
+
+;; Without memoization the side effect would be triggered anew every
+;; time the stream seq is iterated over.  This would surely change
+;; results.
