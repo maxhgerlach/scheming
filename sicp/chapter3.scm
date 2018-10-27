@@ -1736,10 +1736,10 @@
 (define s (cons-stream 1 (add-streams s s)))
 ;; 1 2 4 8 16 32 ...
 
-(define (display10 s)
+(define (display-n n s)
   (display-stream (stream-map (lambda (idx) (stream-ref s idx))
-                              (stream-enumerate-interval 0 10))))
-(display10 s)
+                              (stream-enumerate-interval 0 n))))
+(define (display10 s) (display-n 10 s))
 
 ;; 1
 ;; 2
@@ -1799,3 +1799,35 @@
 ;; 45
 ;; 55
 ;; 66
+
+
+;; Ex. 3.56
+
+;; all integers that can be built from products of factors 2, 3, or 5
+
+(define (merge s1 s2)
+  (cond ((stream-null? s1) s2)
+        ((stream-null? s2) s1)
+        (else
+         (let ((s1car (stream-car s1))
+               (s2car (stream-car s2)))
+           (cond ((< s1car s2car)
+                  (cons-stream
+                   s1car
+                   (merge (stream-cdr s1) s2)))
+                 ((> s1car s2car)
+                  (cons-stream
+                   s2car
+                   (merge s1 (stream-cdr s2))))
+                 (else
+                  (cons-stream
+                   s1car
+                   (merge (stream-cdr s1)
+                          (stream-cdr s2)))))))))
+
+(define S (cons-stream 1 (merge
+                          (merge (scale-stream S 2)
+                                 (scale-stream S 3))
+                          (scale-stream S 5))))
+
+(display-n 30 S)
