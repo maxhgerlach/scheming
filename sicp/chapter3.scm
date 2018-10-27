@@ -1730,3 +1730,23 @@
           (else (iter (stream-cdr ps)))))
   (iter primes))
 
+
+;; Ex. 3.53
+
+(define s (cons-stream 1 (add-streams s s)))
+;; 1 2 4 8 16 32 ...
+
+(display-stream (stream-map (lambda (idx) (stream-ref s idx))
+                            (stream-enumerate-interval 0 10)))
+
+;; 1
+;; 2
+;; 4
+;; 8
+;; 16
+;; 32
+;; 64
+;; 128
+;; 256
+;; 512
+;; 1024
