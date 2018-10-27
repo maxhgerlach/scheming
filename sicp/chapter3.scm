@@ -1750,3 +1750,27 @@
 ;; 256
 ;; 512
 ;; 1024
+
+
+;; Ex. 3.54
+
+(define (mul-streams s1 s2) (stream-map * s1 s2))
+
+(define factorials
+  (cons-stream 1 (mul-streams factorials integers)))
+
+(display-stream (stream-map (lambda (idx) (stream-ref factorials idx))
+                            (stream-enumerate-interval 0 10)))
+
+
+;; 1
+;; 1
+;; 2
+;; 6
+;; 24
+;; 120
+;; 720
+;; 5040
+;; 40320
+;; 362880
+;; 3628800
