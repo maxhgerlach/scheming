@@ -1595,3 +1595,33 @@
 ;; 219
 
 
+;; Exercise 3.51
+
+(define (show x)
+  (display-line x)
+  x)
+
+(define x
+  (stream-map show
+              (stream-enumerate-interval 0 10)))
+;; 0
+
+(stream-ref x 5)
+
+;; => 5
+;;
+;; 1
+;; 2
+;; 3
+;; 4
+;; 5
+
+;; [due to delay memoization, each stream element is only shown the
+;; first time it is accessed]
+
+(stream-ref x 7)
+
+;; => 7
+
+;; 6
+;; 7
