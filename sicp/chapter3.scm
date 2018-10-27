@@ -1736,8 +1736,10 @@
 (define s (cons-stream 1 (add-streams s s)))
 ;; 1 2 4 8 16 32 ...
 
-(display-stream (stream-map (lambda (idx) (stream-ref s idx))
-                            (stream-enumerate-interval 0 10)))
+(define (display10 s)
+  (display-stream (stream-map (lambda (idx) (stream-ref s idx))
+                              (stream-enumerate-interval 0 10))))
+(display10 s)
 
 ;; 1
 ;; 2
@@ -1759,9 +1761,7 @@
 (define factorials
   (cons-stream 1 (mul-streams factorials integers)))
 
-(display-stream (stream-map (lambda (idx) (stream-ref factorials idx))
-                            (stream-enumerate-interval 0 10)))
-
+(display10 factorials)
 
 ;; 1
 ;; 1
@@ -1774,3 +1774,28 @@
 ;; 40320
 ;; 362880
 ;; 3628800
+
+
+;; Ex. 3.55
+
+;; (define (partial-sums s)
+;;   (cons-stream (stream-car s) (stream-map
+;;                                (lambda (val) (+ (stream-car s) val))
+;;                                (partial-sums (stream-cdr s)))))
+
+(define (partial-sums s)
+  (cons-stream (stream-car s) (add-streams (stream-cdr s) (partial-sums s))))
+
+(display10 (partial-sums integers))
+
+;; 1
+;; 3
+;; 6
+;; 10
+;; 15
+;; 21
+;; 28
+;; 36
+;; 45
+;; 55
+;; 66
