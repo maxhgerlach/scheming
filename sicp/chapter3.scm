@@ -1901,12 +1901,16 @@
     (scale-stream (stream-cdr s2) (stream-car s1))
     (mul-series (stream-cdr s1) s2))))
 
-;; s1: a0 + a1 x + a2 x^2 + ...
-;; s2: b0 + b1 x + b2 x^2 + ...
-;; 
-;; s1 * s2 = a0 * b0 + (a0 * b1 + b0 * a1) x + (a0 * b2 + b0 * a2 + a1 * b1) x^2
-
-
 ;; (display-n 10 (add-series
 ;;                (mul-series sine-series sine-series)
 ;;                (mul-series cosine-series cosine-series)))
+
+
+;; Ex. 3.61
+
+(define (invert-unit-series s)
+  (cons-stream
+   1
+   (mul-series (scale-stream (stream-cdr s) -1) (invert-unit-series s))))
+
+;; (display-n 10 (invert-unit-series exp-series))
