@@ -1858,3 +1858,35 @@
 
 ; (display-n 10 (expand 3 8 10))
 ; => 3 7 5 0 0 0 0 0 0 0 0 ...
+
+
+;; Ex. 3.59
+
+;; a
+
+(define (integrate-series coeff-stream)
+  (define (integrate-terms idx coeffs)
+    (cons-stream
+     (/ (stream-car coeffs) idx)
+     (integrate-terms (+ 1 idx) (stream-cdr coeffs))))
+  (integrate-terms 1 coeff-stream))
+
+;; (display-n 4 (integrate-series (stream-enumerate-interval 30.0 40.0)))
+
+
+;; b
+
+(define exp-series
+  (cons-stream 1 (integrate-series exp-series)))
+
+;(display-n 10 exp-series)               ; 1 + x + 1/2 x^2 + 1/6 x^3 + ...
+
+(define cosine-series
+  (cons-stream 1 (scale-stream (integrate-series sine-series) -1)))
+
+(define sine-series
+  (cons-stream 0 (integrate-series cosine-series)))
+
+
+(display-n 10 cosine-series)            ; 1 - 1/2 x^2 + 1/24 x^4 + ... 
+(display-n 10 sine-series)              ; x - 1/6 x^3 + 1/120 x^5 + ...
