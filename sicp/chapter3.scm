@@ -1831,3 +1831,17 @@
                           (scale-stream S 5))))
 
 (display-n 30 S)
+
+
+;; Ex. 3.57
+;;
+;; fibs implemented via add-streams with memoization in delay (see
+;; above): No addition needed to recall previous Fibonacci numbers ->
+;; to get the n-th Fibonacci number we need n-1 additions.
+;;
+;; Without memoization all terms need to be recomputed:
+;;  additions(n) = additions(n-1) + additions(n-2)
+;; This is the Fibonacci relation, solution: additions(n) = \phi ^ n
+
+
+
