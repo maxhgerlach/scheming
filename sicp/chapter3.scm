@@ -1914,3 +1914,21 @@
    (mul-series (scale-stream (stream-cdr s) -1) (invert-unit-series s))))
 
 ;; (display-n 10 (invert-unit-series exp-series))
+
+
+;; Ex. 3.62
+
+(define (div-series s1 s2)
+  (let ((a (stream-car s2)))
+    (if (= a 0)
+        (error "The constant term of s2 may not be zero"))
+    (let ((ai (/ 1 a)))
+      (mul-series
+       (scale-stream s1 ai)
+       (invert-unit-series (scale-stream s2 ai))))))
+
+(define tangent-series (div-series sine-series cosine-series))
+
+;; (display-n 10 tangent-series)
+
+     
