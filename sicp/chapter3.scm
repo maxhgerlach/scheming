@@ -1890,3 +1890,23 @@
 
 (display-n 10 cosine-series)            ; 1 - 1/2 x^2 + 1/24 x^4 + ... 
 (display-n 10 sine-series)              ; x - 1/6 x^3 + 1/120 x^5 + ...
+
+
+;; Ex. 3.60
+
+(define (mul-series s1 s2)
+  (cons-stream
+   (* (stream-car s1) (stream-car s2))
+   (add-streams
+    (scale-stream (stream-cdr s2) (stream-car s1))
+    (mul-series (stream-cdr s1) s2))))
+
+;; s1: a0 + a1 x + a2 x^2 + ...
+;; s2: b0 + b1 x + b2 x^2 + ...
+;; 
+;; s1 * s2 = a0 * b0 + (a0 * b1 + b0 * a1) x + (a0 * b2 + b0 * a2 + a1 * b1) x^2
+
+
+;; (display-n 10 (add-series
+;;                (mul-series sine-series sine-series)
+;;                (mul-series cosine-series cosine-series)))
