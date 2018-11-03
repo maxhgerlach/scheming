@@ -2128,3 +2128,20 @@
 ;; 
 
 ;; The order is a bit strange (gaps are filled up rather late, but it works)
+
+
+
+;; Ex. 3.68
+
+;; (define (louis-pairs s t)
+;;   (interleave
+;;    (stream-map (lambda (x) (list (stream-car s) x))
+;;                t)
+;;    (louis-pairs (stream-cdr s) (stream-cdr t))))
+
+;; This will recur infinitely. Both arguments to interleave are
+;; evaluated eagerly (it's a procedure, not a macro). But louis-pairs
+;; called as an argument to interleave never produces a non-delayed
+;; stream element!
+
+
