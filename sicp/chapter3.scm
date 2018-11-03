@@ -2145,3 +2145,38 @@
 ;; stream element!
 
 
+;; Ex. 3.69
+
+(define (triples s t u)
+  (cons-stream
+   (list (stream-car s) (stream-car t) (stream-car u))
+   (interleave
+    (stream-map (lambda (x) (cons (stream-car s) x))
+                (pairs t u))            ; probably not very efficient
+    (triples (stream-cdr s) (stream-cdr t) (stream-cdr u)))))
+
+;; (display-n 10 (triples integers integers integers))
+;; =>
+;; (1 1 1)
+;; (1 1 1)
+;; (2 2 2)
+;; (1 1 2)
+;; (2 2 2)
+;; (1 2 2)
+;; (3 3 3)
+;; (1 1 3)
+;; (2 2 3)
+;; (1 2 3)
+;; (3 3 3)
+
+(define pythagorean-triples
+  (stream-filter (lambda (triple) (let ((i (car triple))
+                                        (j (cadr triple))
+                                        (k (caddr triple)))
+                                    (= (+ (square i) (square j))
+                                       (square k)))) ; i <= j automatically
+                 (triples integers integers integers)))
+
+;; (stream-car pythagorean-triples)        ; (3 4 5)
+;; (stream-ref pythagorean-triples 1)      ; (6 8 10)
+;; (stream-ref pythagorean-triples 2)      ; (5 12 13)
