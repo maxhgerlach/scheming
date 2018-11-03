@@ -2020,3 +2020,40 @@
 ;; (tol-sqrt 2.0 0.00000000000001)         ;=> 1.414213562373095
 ;; (tol-sqrt 2.0 0.1)                      ;=> 1.4166666666666665
 ;; (tol-sqrt 2.0 0.01)                     ;=> 1.4142156862745097
+
+
+;; Exercise 3.65
+;;
+;; ln 2 = 1 - 1/2 + 1/3 - 1/4 + ...   ~ 0.69314718056
+
+(define (iterations-until-tolerance s tolerance)
+  (define (continue prev iterations s-cdr)
+    (cond ((stream-null? s-cdr)
+           '())
+          ((<= (abs (- prev (stream-car s-cdr))) tolerance)
+           iterations)
+          (else
+           (continue (stream-car s-cdr) (+ 1 iterations) (stream-cdr s-cdr)))))
+  (continue (stream-car s) 1 (stream-cdr s)))
+
+(define (ln2-summands n)
+  (cons-stream (/ 1.0 n)
+               (stream-map - (ln2-summands (+ n 1)))))
+
+(define ln2-stream
+  (partial-sums (ln2-summands 1)))
+
+;; (stream-limit ln2-stream 0.001)          ;=> 0.6936464315588232
+;; (iterations-until-tolerance ln2-stream 0.001) ;=> 1000
+
+;; (stream-limit (euler-transform ln2-stream) 0.001) ;=>0.6928571428571428
+;; (iterations-until-tolerance (euler-transform ln2-stream) 0.001) ;=> 5
+;; (stream-limit (euler-transform ln2-stream) 0.000001) ;=> 0.6931466925212173
+;; (iterations-until-tolerance (euler-transform ln2-stream) 0.000001) ;=> 61
+
+;; (stream-limit (accelerated-sequence euler-transform ln2-stream) 0.001) ;=> 0.6931488693329254
+;; (iterations-until-tolerance (accelerated-sequence euler-transform ln2-stream) 0.001) ;=> 3
+;; (stream-limit (accelerated-sequence euler-transform ln2-stream) 0.000001) ;=> 0.6931471806635636
+;; (iterations-until-tolerance (accelerated-sequence euler-transform ln2-stream) 0.000001) ;=> 5
+
+
