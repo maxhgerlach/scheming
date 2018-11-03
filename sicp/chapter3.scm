@@ -1987,3 +1987,16 @@
 
 
 ;; Exercise 3.63
+;;
+;; Less efficient:
+;; 
+;; (define (sqrt-stream x)
+;;   (cons-stream 1.0 (stream-map
+;;                     (lambda (guess)
+;;                       (sqrt-improve guess x))
+;;                     (sqrt-stream x))))
+;;
+;; This will build new cons-stream's again and again, thus voiding the
+;; benefits of memoization. [I probably made the same mistake above in
+;; div-series etc.]. Without memoization in delay both versions would
+;; be equally inefficient.
