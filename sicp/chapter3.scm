@@ -2057,3 +2057,74 @@
 ;; (iterations-until-tolerance (accelerated-sequence euler-transform ln2-stream) 0.000001) ;=> 5
 
 
+;; Infinite streams of pairs
+
+(define (interleave s1 s2)
+  (if (stream-null? s1)
+      s2
+      (cons-stream (stream-car s1)
+                   (interleave s2 (stream-cdr s1)))))
+
+(define (pairs s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (interleave
+    (stream-map (lambda (x) (list (stream-car s) x))
+                (stream-cdr t))
+    (pairs (stream-cdr s) (stream-cdr t)))))
+
+
+;; Ex. 3.66
+(define int-pairs (pairs integers integers))
+
+;; (display-n 20 int-pairs)
+
+;; 1(1 1) 2(1 2) 4(1 3)  6(1 4)  8(1 5) 10(1 6) 12(1 7) 14(1 8) 16(1 9) 18(1 10) 20(1 11)
+;;        3(2 2) 5(2 3)  9(2 4) 13(2 5) 17(2 6) 21(2 7)
+;;               7(3 3) 11(3 4) 19(3 5)
+;;                      15(4 4)
+
+
+(define (stream-find s val max-iter)
+  (define (iter sub-s i)
+    (cond ((equal? (stream-car sub-s) val)
+           i)
+          ((>= i max-iter)
+           '())
+          (else (iter (stream-cdr sub-s) (+ 1 i)))))
+  (iter s 0))
+
+;; (stream-find int-pairs (list 1 1) 10000)   ; 0
+;; (stream-find int-pairs (list 1 100) 10000) ; 197 [this is the number of pairs preceding (1 100)]
+;; (stream-find int-pairs (list 2 100) 10000) ; 392 (2 * 197 - 2)
+;; (stream-find int-pairs (list 3 100) 10000) ; 778
+;; (stream-find int-pairs (list 4 100) 100000) ; 1542
+;; (stream-find int-pairs (list 99 100) 1000000) ; '() ...  should be on the order of 2^99 * 100 (a bit less)
+
+
+
+;; Ex. 3.67
+
+(define (all-pairs s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (interleave
+    (interleave (stream-map (lambda (x) (list (stream-car s) x))
+                            (stream-cdr t))
+                (stream-map (lambda (x) (list x (stream-car t)))
+                            (stream-cdr s)))
+    (all-pairs (stream-cdr s) (stream-cdr t)))))
+
+;; (stream-ref (all-pairs integers integers) 0) ;(1 1)
+;; (stream-ref (all-pairs integers integers) 1) ;(1 2)
+
+;; (display-n 20 (all-pairs integers integers))
+;;  0(1 1)  1(1 2)  5(1 3)  9(1 4) 13(1 5) 17(1 6)
+;;  3(2 1)  2(2 2)  4(2 3) 12(2 4) 20(2 5)
+;;  7(3 1)  8(3 2)  6(3 3) 10(3 4)
+;; 11(4 1) 16(4 2) 18(4 3) 14(4 4)
+;; 15(5 1)
+;; 19(6 1)
+;; 
+
+;; The order is a bit strange (gaps are filled up rather late, but it works)
