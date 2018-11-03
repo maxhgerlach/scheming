@@ -2000,3 +2000,23 @@
 ;; benefits of memoization. [I probably made the same mistake above in
 ;; div-series etc.]. Without memoization in delay both versions would
 ;; be equally inefficient.
+
+
+;; Exercise 3.64
+
+(define (stream-limit s tolerance)
+  (define (continue prev s-cdr)
+    (cond ((stream-null? s-cdr)
+           prev)
+          ((<= (abs (- prev (stream-car s-cdr))) tolerance)
+           (stream-car s-cdr))
+          (else
+           (continue (stream-car s-cdr) (stream-cdr s-cdr)))))
+  (continue (stream-car s) (stream-cdr s)))
+
+(define (tol-sqrt x tolerance)
+  (stream-limit (sqrt-stream x) tolerance))
+
+;; (tol-sqrt 2.0 0.00000000000001)         ;=> 1.414213562373095
+;; (tol-sqrt 2.0 0.1)                      ;=> 1.4166666666666665
+;; (tol-sqrt 2.0 0.01)                     ;=> 1.4142156862745097
