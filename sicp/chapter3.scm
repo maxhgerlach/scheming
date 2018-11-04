@@ -2180,3 +2180,45 @@
 ;; (stream-car pythagorean-triples)        ; (3 4 5)
 ;; (stream-ref pythagorean-triples 1)      ; (6 8 10)
 ;; (stream-ref pythagorean-triples 2)      ; (5 12 13)
+
+
+;; Exercise 3.70
+
+(define (merge-weighted s1 s2 weight)
+  (cond ((stream-null? s1) s2)
+        ((stream-null? s2) s1)
+        (else
+         (let ((s1car (stream-car s1))
+               (s2car (stream-car s2)))
+           (cond ((< (weight s1car) (weight s2car))
+                  (cons-stream
+                   s1car
+                   (merge-weighted (stream-cdr s1) s2 weight)))
+                 ((> (weight s1car) (weight s2car))
+                  (cons-stream
+                   s2car
+                   (merge-weighted s1 (stream-cdr s2) weight)))
+                 (else                  ;include both
+                  (cons-stream
+                   s1car
+                   (cons-stream
+                    s2car
+                    (merge-weighted (stream-cdr s1)
+                                    (stream-cdr s2)
+                                    weight)))))))))
+
+(define (weighted-pairs s t pair-weight)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (merge-weighted
+    (stream-map (lambda (x) (list (stream-car s) x))
+                (stream-cdr t))
+    (weighted-pairs (stream-cdr s) (stream-cdr t) pair-weight)
+    pair-weight)))
+
+;; a
+(define int-pairs-weighted
+  (weighted-pairs integers integers
+                  (lambda (pair) (apply + pair))))
+
+;; (display-n 40 int-pairs-weighted)
