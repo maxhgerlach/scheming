@@ -2383,3 +2383,27 @@
   (smoothed-make-zero-crossings sense-data 0 0))
 ;; (stream-to-list smoothed-zero-crossings 12)
 ;; => (0 0 0 0 0 0 -1 0 0 0 0 1)
+
+
+;; Ex. 3.76
+
+(define (smooth input-stream)
+  (stream-map (lambda (old new) (/ (+ old new) 2.0))
+              (cons-stream 0 input-stream)
+              input-stream))
+
+;; (stream-to-list (smooth sense-data) 10)
+;; => (0.5 1.5 1.75 1.25 0.75 0.2 -1.05 -2.5 -2.5 -1.25)
+
+(define (make-modular-zero-crossings input-stream proc)
+  (let ((proced-stream (proc input-stream)))
+    (stream-map sign-change-detector
+                proced-stream
+                (cons-stream 0 proced-stream))))
+
+(define modular-smoothed-zero-crossings
+  (make-modular-zero-crossings sense-data smooth))
+;; (stream-to-list modular-smoothed-zero-crossings 12)
+;; => (0 0 0 0 0 0 -1 0 0 0 0 1)
+
+
