@@ -2236,3 +2236,33 @@
                                                   (+ (* 2 i) (* 3 j) (* 5 i j)))))))
 
 ;; (display-n 40 special-int-pairs-weighted)
+
+
+;; Ex. 3.71
+
+(define (make-ramanujan-numbers)
+  (define (pair-weight pair)
+    (let ((i (car pair))
+          (j (cadr pair)))
+      (+ (* i i i) (* j j j))))
+  (let ((int-pairs-cube-weighted
+         (weighted-pairs integers integers pair-weight))
+        (prev-weight 0))
+    (stream-filter
+     (lambda (cur-weight)
+       (let ((saved-prev-weight prev-weight))
+         (set! prev-weight cur-weight)  ; side-effect in filter -- not the most elegant
+         (= cur-weight saved-prev-weight)))
+     (stream-map pair-weight int-pairs-cube-weighted))))
+
+;; (stream-ref (make-ramanujan-numbers) 0) ; 1729
+
+;; (display-n 5 (make-ramanujan-numbers))
+;; =>
+;; 1729
+;; 4104
+;; 13832
+;; 20683
+;; 32832
+;; 39312
+
