@@ -2291,9 +2291,11 @@
 (define RC1 (RC 5 1 0.5))
 
 (define (list-to-stream lst)
-  (cons-stream
-   (car lst)
-   (list-to-stream (cdr lst))))
+  (if (null? lst)
+      the-empty-stream
+      (cons-stream
+       (car lst)
+       (list-to-stream (cdr lst)))))
 
 ;; scheme@(guile-user)> (display-n 5 (RC1 (list-to-stream (list 1 1 1 1 1 1)) 0))
 ;; 5
@@ -2302,3 +2304,51 @@
 ;; 6.5
 ;; 7.0
 ;; 7.5
+
+
+;; Ex. 3.74
+
+(define (stream-to-list s n)
+  (if (or (= n 0) (stream-null? s))
+      '()
+      (cons (stream-car s)
+            (stream-to-list (stream-cdr s) (- n 1)))))
+
+(define (sign-change-detector new old)
+  (cond ((and (>= old 0) (< new 0)) -1)
+        ((and (< old 0) (>= new 0)) +1)
+        (else 0)))
+
+(define sense-data
+  (list-to-stream
+   (list 1 2 1.5 1 0.5 -0.1 -2 -3 -2 -0.5 0.2 3 4)))
+
+;; (stream-to-list sense-data 14)
+
+(define (make-zero-crossings input-stream last-value)
+  (if (stream-null? input-stream)
+      the-empty-stream
+      (cons-stream
+       (sign-change-detector
+        (stream-car input-stream)
+        last-value)
+       (make-zero-crossings
+        (stream-cdr input-stream)
+        (stream-car input-stream)))))
+(define zero-crossings
+  (make-zero-crossings sense-data 0))
+
+;; (stream-to-list zero-crossings 13)
+;; => (0 0 0 0 0 -1 0 0 0 0 1 0 0)
+
+
+(define eva-zero-crossings
+  (stream-map sign-change-detector
+              sense-data
+              (cons-stream 0 sense-data)))
+
+;; (stream-to-list eva-zero-crossings 20)
+;; => (0 0 0 0 0 -1 0 0 0 0 1 0 0)
+
+;; (equal? (stream-to-list eva-zero-crossings 20) (stream-to-list zero-crossings 13))
+;; => #t
