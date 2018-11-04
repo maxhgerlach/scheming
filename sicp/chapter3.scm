@@ -2222,3 +2222,17 @@
                   (lambda (pair) (apply + pair))))
 
 ;; (display-n 40 int-pairs-weighted)
+
+
+;; b
+(define special-int-pairs-weighted
+  (stream-filter (lambda (pair) (let ((prod (apply * pair)))
+                                  (and (not (= 0 (remainder prod 2)))
+                                       (not (= 0 (remainder prod 3)))
+                                       (not (= 0 (remainder prod 5))))))
+                 (weighted-pairs integers integers
+                                 (lambda (pair) (let ((i (car pair))
+                                                      (j (cadr pair)))
+                                                  (+ (* 2 i) (* 3 j) (* 5 i j)))))))
+
+;; (display-n 40 special-int-pairs-weighted)
