@@ -2352,3 +2352,34 @@
 
 ;; (equal? (stream-to-list eva-zero-crossings 20) (stream-to-list zero-crossings 13))
 ;; => #t
+
+
+;; Ex. 3.75
+
+(define (louis-smoothed-make-zero-crossings input-stream last-value)
+  (let ((avpt (/ (+ (stream-car input-stream)
+                    last-value)
+                 2)))
+    (cons-stream
+     (sign-change-detector avpt last-value)
+     (louis-smoothed-make-zero-crossings
+      (stream-cdr input-stream) avpt))))
+
+(define louis-smoothed-zero-crossings
+  (louis-smoothed-make-zero-crossings sense-data 0))
+;; (stream-to-list louis-smoothed-zero-crossings 12)
+;; => (0 0 0 0 0 0 -1 0 0 0 0 1)
+
+
+(define (smoothed-make-zero-crossings input-stream last-value last-avpt)
+  (let ((avpt (/ (+ (stream-car input-stream)
+                    last-value)
+                 2)))
+    (cons-stream
+     (sign-change-detector avpt last-avpt)
+     (smoothed-make-zero-crossings
+      (stream-cdr input-stream) (stream-car input-stream) avpt))))
+(define smoothed-zero-crossings
+  (smoothed-make-zero-crossings sense-data 0 0))
+;; (stream-to-list smoothed-zero-crossings 12)
+;; => (0 0 0 0 0 0 -1 0 0 0 0 1)
