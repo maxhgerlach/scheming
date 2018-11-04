@@ -2266,3 +2266,39 @@
 ;; 32832
 ;; 39312
 
+
+
+;; Streams as signals
+
+(define (integral integrand initial-value dt)
+  (define int
+    (cons-stream initial-value
+                 (add-streams (scale-stream integrand dt)
+                              int)))
+  int)
+
+
+;; Ex. 3.73
+
+(define (RC R C dt)
+  (lambda (i v0)
+    (add-streams
+     (scale-stream i R)
+     (integral (scale-stream i (/ 1.0 C))
+               v0
+               dt))))
+
+(define RC1 (RC 5 1 0.5))
+
+(define (list-to-stream lst)
+  (cons-stream
+   (car lst)
+   (list-to-stream (cdr lst))))
+
+;; scheme@(guile-user)> (display-n 5 (RC1 (list-to-stream (list 1 1 1 1 1 1)) 0))
+;; 5
+;; 5.5
+;; 6.0
+;; 6.5
+;; 7.0
+;; 7.5
