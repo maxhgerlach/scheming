@@ -2466,3 +2466,13 @@
   y)
 
 ;; (display-n 100 (solve-2nd 0. -1. 0.1 0. 1.)) ; bad sine
+
+
+;; Ex. 3.79
+
+(define (solve-2nd-gen f dt y0 dy0)
+  ;; solve d^2 y / dt^2 = f(dy/dt, y)
+  (define y (integral_1 (delay dy) y0 dt))
+  (define dy (integral_1 (delay ddy) dy0 dt))
+  (define ddy (stream-map f dy y))
+  y)
