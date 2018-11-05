@@ -2409,7 +2409,7 @@
 
 ;; 3.5.4 Streams and Delayed Evaluation
 
-(define (integral_ delayed-integrand initial-value dt)
+(define (integral_1 delayed-integrand initial-value dt)
   (define int
     (cons-stream
      initial-value
@@ -2417,12 +2417,39 @@
        (add-streams (scale-stream integrand dt) int))))
   int)
 
-(define (solve_ f y0 dt)
-  (define y (integral_ (delay dy) y0 dt))
+(define (solve_1 f y0 dt)
+  (define y (integral_1 (delay dy) y0 dt))
   (define dy (stream-map f y))
   y)
 
-;; (stream-ref (solve_ (lambda (y) y)
+;; (stream-ref (solve_1 (lambda (y) y)
+;;                    1
+;;                    0.001)
+;;             1000)
+;; => 2.716923932235896
+
+
+
+
+;; Ex. 3.77
+
+(define (integral_2 delayed-integrand initial-value dt)
+  (cons-stream
+   initial-value
+   (let ((integrand (force delayed-integrand)))
+     (if (stream-null? integrand)
+         the-empty-stream
+         (integral_2 (delay (stream-cdr integrand))
+                     (+ (* dt (stream-car integrand))
+                        initial-value)
+                     dt)))))
+
+(define (solve_2 f y0 dt)
+  (define y (integral_2 (delay dy) y0 dt))
+  (define dy (stream-map f y))
+  y)
+
+;; (stream-ref (solve_2 (lambda (y) y)
 ;;                    1
 ;;                    0.001)
 ;;             1000)
