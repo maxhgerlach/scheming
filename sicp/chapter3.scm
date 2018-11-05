@@ -2456,3 +2456,13 @@
 ;; => 2.716923932235896
 
 
+
+;; Ex. 3.78
+
+(define (solve-2nd a b dt y0 dy0)
+  (define y (integral_1 (delay dy) y0 dt))
+  (define dy (integral_1 (delay ddy) dy0 dt))
+  (define ddy (add-streams (scale-stream dy a) (scale-stream y b)))
+  y)
+
+;; (display-n 100 (solve-2nd 0. -1. 0.1 0. 1.)) ; bad sine
