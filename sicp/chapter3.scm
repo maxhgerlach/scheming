@@ -2476,3 +2476,20 @@
   (define dy (integral_1 (delay ddy) dy0 dt))
   (define ddy (stream-map f dy y))
   y)
+
+
+;; Ex. 3.80
+
+(define (RLC R L C dt)
+  (lambda (vC0 iL0)
+    (define vC (integral_1 (delay dvC) vC0 dt))
+    (define iL (integral_1 (delay diL) iL0 dt))
+    (define dvC (scale-stream iL (- (/ 1. C))))
+    (define diL (add-streams
+                 (scale-stream vC (/ 1. L))
+                 (scale-stream iL (- (/ R L)))))
+    (cons vC iL)))
+
+;; (define RLC_streams ((RLC 1. 1. 0.2 0.1) 10. 0.))
+;; (display-n 20 (car RLC_streams))
+;; (display-n 20 (cdr RLC_streams))
